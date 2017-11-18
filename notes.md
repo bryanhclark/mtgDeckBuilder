@@ -18,6 +18,11 @@
 --use card's multiverse id with this api to get card images
 http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=190420&type=card
 
+
+##Things to Do
+-re seed database with AllSets.json
+    -so we have access to multiverseID
+
 ## Card Info
 * Set Info Keys:
     * name
