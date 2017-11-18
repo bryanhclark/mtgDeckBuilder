@@ -59,8 +59,11 @@ router.post('/addDeck', (req, res, next) => {
                     })
             })
         })
+    res.redirect('/')
 
 })
+
+
 
 router.get('/:name', (req, res, next) => {
     let name = req.params.name

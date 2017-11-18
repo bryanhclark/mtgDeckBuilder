@@ -30,6 +30,10 @@ app.set('view engine', 'html');
 
 app.use('/cards', cardRouter)
 
+app.get('/cards', (req, res) => {
+    res.redirect('/')
+})
+
 app.get('/', (req, res, next) => {
     res.render('index');
 })
