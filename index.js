@@ -40,14 +40,14 @@ app.get('/', (req, res, next) => {
 
 
 
-const PORT = 3000;
+const PORT = 4000;
 
 Card.sync()
     .then(() => {
         return Deck.sync()
     })
     .then(() => {
-        return decks_cards.sync({ force: true })
+        return decks_cards.sync()
     })
     .then(() => {
         app.listen(PORT, () => {

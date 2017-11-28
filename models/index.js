@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const db = new Sequelize('postgres://localhost:5432/mtg');
+const db = new Sequelize('postgres://localhost:5432/mtg', { logging: false });
 
 const Card = db.define('cards', {
 
@@ -9,11 +9,12 @@ const Card = db.define('cards', {
     flavor: { type: Sequelize.TEXT, allowNull: true },
     layout: { type: Sequelize.STRING, allowNull: true },
     manaCost: { type: Sequelize.STRING, allowNull: true },
-    // multiverseId: { type: Sequelize.INTEGER, allowNull: true },
-    mciNumber: { type: Sequelize.INTEGER, allowNull: true },
+    multiverseid: { type: Sequelize.INTEGER, allowNull: true },
+    mciNumber: { type: Sequelize.STRING, allowNull: true },
     power: { type: Sequelize.STRING, allowNull: true },
     toughness: { type: Sequelize.STRING, allowNull: true },
     text: { type: Sequelize.TEXT, allowNull: true },
+    set: { type: Sequelize.STRING, allowNull: true },
     type: { type: Sequelize.STRING, allowNull: true },
     types: { type: Sequelize.ARRAY(Sequelize.TEXT), allowNull: true }
 
