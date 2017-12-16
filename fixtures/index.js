@@ -36,6 +36,8 @@ let setNames = mtgSets.map((name) => {
 const cardSets = mtgSets.map((name) => {
     return mtgJson[name].cards;
 })
+
+
 for (var i = 0; i < setNames.length; i++) {
     for (var j = 0; j < cardSets[i].length; j++) {
         cardSets[i][j].set = setNames[i];
@@ -54,26 +56,20 @@ cardSets.forEach(function (cardSet) {
     })
 })
 
+const cardsWithMultiverseId = allCards.filter(card => {
+    if (card.multiverseid) {
+        return card
+    };
+})
+
+console.log(cardsWithMultiverseId.length);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//seed fial for mtg db
 // mtgModel.sync({ force: true })
 //     .then(() => {
 
-//         mtgModel.bulkCreate(allCards);
+//         mtgModel.bulkCreate(cardsWithMultiverseId);
 
 //     })
 //     .then(() => {
