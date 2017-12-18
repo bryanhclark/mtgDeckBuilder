@@ -65,17 +65,16 @@ const cardsWithMultiverseId = allCards.filter(card => {
 console.log(cardsWithMultiverseId.length);
 
 
-//seed fial for mtg db
-// mtgModel.sync({ force: true })
-//     .then(() => {
+// seed fial for mtg db
+mtgModel.sync({ force: true })
+    .then(() => {
+        mtgModel.bulkCreate(cardsWithMultiverseId);
 
-//         mtgModel.bulkCreate(cardsWithMultiverseId);
-
-//     })
-//     .then(() => {
-//         console.log('sucess');
-//     })
-//     .catch();
+    })
+    .then(() => {
+        console.log('sucess');
+    })
+    .catch();
 
 
 
