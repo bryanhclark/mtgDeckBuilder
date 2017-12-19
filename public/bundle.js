@@ -3302,11 +3302,7 @@ var _Home2 = _interopRequireDefault(_Home);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement(
-    'h1',
-    null,
-    'Test'
-), document.getElementById('main'));
+(0, _reactDom.render)(_react2.default.createElement(_Home2.default, null), document.getElementById('main'));
 
 /***/ }),
 /* 47 */
@@ -22478,7 +22474,7 @@ var Home = function (_Component) {
                 _react2.default.createElement(
                     'h1',
                     null,
-                    'Test'
+                    'Welcome to Home'
                 )
             );
         }

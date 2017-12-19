@@ -7,7 +7,7 @@ import store from './store'
 import Home from './components/Home'
 
 render(
-    <h1>Test</h1>
+    <Home />
     ,
     document.getElementById('main')
 )
