@@ -8,9 +8,8 @@ our bins have maximum sizes. the bins represent abstracted cards, i.e. land card
 to count the number of hands that satisfy the condition of being able to play a specific card in the deck, subject to the restrictions of mana cost, number of that card int he deck, and what turn of the game we are modeling.
 * how do we impose those restrictions:
 multilayered-multichoose! first we say, "well we know we need at least one of the target card, and the card's converted mana cost (C from here forward) number of lands". this leaves us with three bins: 
-  *a bin for the target card `with one ball in it initially`
-  *a bin for lands `with C balls in it initially`
-  *a bin for all the other cards in the deck
+  -a bin for the target card `with one ball in it initially`
+  -a bin for lands `with C balls in it initially`  -a bin for all the other cards in the deck
 however many cards we have left once we've assign C+1 of them accordingly to these three bins, thats what we do multichoose with. we use the alg to produce a hand for each different allocation of the remaining balls between these bins. then we do layer two...
 at this point each hand has three bins. this isn't enough. so we take each hand and multichoose again on the lands bin the 'lands', producing a one-to-many relation between our generalized three-bin hand representations, and the more useful multichosen land bins. concatenate each of the latter with their former generalized incantation to get all the possible hands which satisfy the conditions. if additional layers of complexity aka new restrictions are to be injected into the algorythm, its likely that more layers of multichoose will be the most straightforward solution.
 * drawbacks:
