@@ -74,7 +74,7 @@ function test(deck,card,draws){
 
   let target = deck.slice(0,draws).map(v=>v.name).includes(card.name)
   let manaC = Object.keys(cardCost).reduce((a,b)=>{
-    if(mana[b]<cardCost[b]) return a && false
+    if(mana[b]<cardCost[b] || !mana[b]) return a && false
     else return a
   },true)
   let manaT = Object.keys(cardCost).reduce((a,b)=>a+cardCost[b],0) <= Object.keys(mana).reduce((a,b)=>a+mana[b],0)
