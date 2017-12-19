@@ -21,6 +21,7 @@ const Card = db.define('cards', {
 })
 
 //optional mana cost reducer, could be useful
+//converts manacost to object, e.x.: '{2}{B}{B}{U}' => { colorless: 2, B: 2, U: 1 }
 Card.prototype.cost = function(){
     return this.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
     if(Object.keys(a).includes(b)){
