@@ -1,6 +1,6 @@
 ## What the algorythm is doing
 #### 1.) [Multichoose](https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics))
-**Q:** what is multichoose?
+**Q:** what is multichoose?  
 **A:** multichoose is very similar to the above-linked stars & bars combinatoric method of counting ways to place N balls in M bins with no restriction on how many balls each bin must have {min 0, max N}.
 **Q:** how is it not the same as stars & bars?
 **A:** our bins have maximum sizes. the bins represent abstracted cards, i.e. land cards, 'Island' cards, non-mana-producing-non-target cards... there is a maximum number in the deck of each of these things, we don't want to exceed it naively with a straigthforward stars & bars count
