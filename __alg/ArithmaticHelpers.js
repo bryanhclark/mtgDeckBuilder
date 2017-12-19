@@ -23,6 +23,7 @@ function probabilityOfPlayingCard(cardsDrawn,card,deck,independent){
   else return 0
 }
 
+// fisher-yates
 function shuffle(a) {
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -34,90 +35,91 @@ function shuffle(a) {
 }
 
 // test probabilityOfPlayingCard
-// function test(deck,card,draws){
-//   shuffle(deck)
-//   let mana = deck.slice(0,draws).reduce((a,b)=>{
-//     switch (b.name){
-//       case 'Island':
-//         if(a.U) a.U++
-//         else a.U=1
-//         break
-//       case 'Forest':
-//         if(a.G) a.G++
-//         else a.G=1
-//         break
-//       case 'Mountain':
-//         if(a.R) a.R++
-//         else a.R=1
-//         break
-//       case 'Plains':
-//         if(a.W) a.W++
-//         else a.W=1
-//         break
-//       case 'Swamp':
-//         if(a.B) a.B++
-//         else a.B=1
-//         break
-//     }
-//     return a
-//   },{})
-//   let cardCost = card.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
-//     if(Object.keys(a).includes(b)){
-//       a[b]++
-//     }else{
-//       if(!['B','G','W','R','U'].includes(b)) a.C = (!isNaN(parseInt(b))) ? parseInt(b) : 0
-//       else a[b]=1
-//     }
-//     return a
-//   },{})
+function test(deck,card,draws){
+  shuffle(deck)
+  let mana = deck.slice(0,draws).reduce((a,b)=>{
+    switch (b.name){
+      case 'Island':
+        if(a.U) a.U++
+        else a.U=1
+        break
+      case 'Forest':
+        if(a.G) a.G++
+        else a.G=1
+        break
+      case 'Mountain':
+        if(a.R) a.R++
+        else a.R=1
+        break
+      case 'Plains':
+        if(a.W) a.W++
+        else a.W=1
+        break
+      case 'Swamp':
+        if(a.B) a.B++
+        else a.B=1
+        break
+    }
+    return a
+  },{})
+  let cardCost = card.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
+    if(Object.keys(a).includes(b)){
+      a[b]++
+    }else{
+      if(!['B','G','W','R','U'].includes(b)) a.C = (!isNaN(parseInt(b))) ? parseInt(b) : 0
+      else a[b]=1
+    }
+    return a
+  },{})
 
-//   let target = deck.slice(0,draws).map(v=>v.name).includes(card.name)
-//   let manaC = Object.keys(cardCost).reduce((a,b)=>{
-//     if(mana[b]<cardCost[b]) return a && false
-//     else return a
-//   },true)
-//   let manaT = Object.keys(cardCost).reduce((a,b)=>a+cardCost[b],0) <= Object.keys(mana).reduce((a,b)=>a+mana[b],0)
-//   return (target && manaT && manaC) ? 1: 0
-// }
+  let target = deck.slice(0,draws).map(v=>v.name).includes(card.name)
+  let manaC = Object.keys(cardCost).reduce((a,b)=>{
+    if(mana[b]<cardCost[b]) return a && false
+    else return a
+  },true)
+  let manaT = Object.keys(cardCost).reduce((a,b)=>a+cardCost[b],0) <= Object.keys(mana).reduce((a,b)=>a+mana[b],0)
 
-// let TestDeck = [
-//   {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Card1' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{1}{G}{G}'},
-//   {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Card1' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'}
-//   ]
-// let TargetCard = {
-//   name: 'Card',
-//   types:'{Other}',
-//   type:'Other',
-//   manaCost: '{1}{G}{G}'
-// }
-// console.time('PT: ')
-// console.log('Prob = ',probabilityOfPlayingCard(10,TargetCard,TestDeck,true))
-// console.timeEnd('PT: ')
+  return (target && manaT && manaC) ? 1: 0
+}
 
-// let sum = 0
-// let tests = 1000000
-// console.time('ST: ')
-// for(var i=0;i<tests;i++){
-//   sum+=test(TestDeck,TargetCard,10)
-// }
-// console.log('Stat = ',parseFloat(sum)/parseFloat(tests))
-// console.timeEnd('ST: ')
+let TestDeck = [
+  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
+  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{U}{R}{G}'},
+  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'}
+  ]
+let TargetCard = {
+  name: 'Card',
+  types:'{Other}',
+  type:'Other',
+  manaCost: '{U}{W}{G}'
+}
+console.time('PT: ')
+console.log('Prob = ',probabilityOfPlayingCard(10,TargetCard,TestDeck,true))
+console.timeEnd('PT: ')
+
+let sum = 0
+let tests = 100000
+console.time('ST: ')
+for(var i=0;i<tests;i++){
+  sum+=test(TestDeck,TargetCard,10)
+}
+console.log('Stat = ',parseFloat(sum)/parseFloat(tests))
+console.timeEnd('ST: ')
 
 
 // parseBins takes a card and a deck and returns an array of value groups which represent:
@@ -143,7 +145,7 @@ function parseHands(numCards,card,deck,independent){
     return a+=cardCost[b]
   },0)
 
-  let colorCost = convertedManaCost-cardCost.C
+  let colorCost = convertedManaCost-(cardCost.C||0)
 
   // objectify deck into manaproducing, non-manaproducing, and target card groups
   let deckBins = (independent)
