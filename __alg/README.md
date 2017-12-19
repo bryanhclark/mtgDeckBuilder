@@ -7,7 +7,7 @@ our bins have maximum sizes. the bins represent abstracted cards, i.e. land card
 * what exactly are we using multichoose for:
 to count the number of hands that satisfy the condition of being able to play a specific card in the deck, subject to the restrictions of mana cost, number of that card int he deck, and what turn of the game we are modeling.
 * how do we impose those restrictions:
-multilayered-multichoose! first we say, "well we know we need at least one of the target card, and the card's converted mana cost (C from here forward) number of lands". this leaves us with three bins: 
+multilayered-multichoose! first we say, "well we know we need at least one of the target card, and the card's converted mana cost (C from here forward) number of lands". this leaves us with three bins:
   *a bin for the target card `with one ball in it initially`
   *a bin for lands `with C balls in it initially`
   *a bin for all the other cards in the deck
