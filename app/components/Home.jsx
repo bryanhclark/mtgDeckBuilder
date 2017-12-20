@@ -5,6 +5,7 @@ import '!style-loader!css-loader!react-select/dist/react-select.css'
 // both js and css
 import Select, { styles } from 'react-select';
 
+///home rules
 
 // import Data from '../data/cardList'
 
