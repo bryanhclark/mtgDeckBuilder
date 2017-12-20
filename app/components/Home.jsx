@@ -33,6 +33,9 @@ export default class Home extends Component {
         selectedOption: '',
     }
     handleChange = (selectedOption) => {
+        if (!selectedOption) {
+            selectedOption = ''
+        }
         this.setState({ selectedOption });
         console.log(`Selected: ${selectedOption.Name}`);
     }

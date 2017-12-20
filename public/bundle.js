@@ -25851,6 +25851,9 @@ var Home = function (_Component) {
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Home.__proto__ || Object.getPrototypeOf(Home)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
             selectedOption: ''
         }, _this.handleChange = function (selectedOption) {
+            if (!selectedOption) {
+                selectedOption = '';
+            }
             _this.setState({ selectedOption: selectedOption });
             console.log('Selected: ' + selectedOption.Name);
         }, _temp), _possibleConstructorReturn(_this, _ret);
