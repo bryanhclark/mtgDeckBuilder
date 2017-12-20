@@ -16,41 +16,15 @@ module.exports = {
         extensions: ['.js', '.jsx']
     },
     module: {
-        rules: [
-            {
-                test: /jsx?$/,
-                include: resolve(__dirname, './app'),
-                use: [{
-                    loader: 'babel-loader',
-                    query: { presets: ['react', 'es2015', "stage-2"] }
-                }]
-            },
-            {
-                test: /(\.global\.css$|react-select.css)/,
-                use: [
-                    {
-                        loader: 'style-loader',
-                    },
-                    {
-                        loader: 'css-loader',
-                    },
-                ],
-            },
-            {
-                test: /^((?!\.global|react-select).)*\.css$/,
-                use: [
-                    {
-                        loader: 'style-loader',
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true,
-                            importLoaders: 1,
-                            sourceMap: true,
-                        },
-                    },
-                ]
+        rules: [{
+            test: /jsx?$/,
+            include: resolve(__dirname, './app'),
+            use: [{
+                loader: 'babel-loader',
+                query: {
+                    presets: ['react', 'es2015', "stage-2"]
+                }
             }]
+        }]
     }
 }
