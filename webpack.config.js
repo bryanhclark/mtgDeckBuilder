@@ -1,5 +1,5 @@
 'use strict';
-
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const {
     resolve
 } = require('path')
@@ -16,13 +16,41 @@ module.exports = {
         extensions: ['.js', '.jsx']
     },
     module: {
-        loaders: [{
-            test: /jsx?$/,
-            include: resolve(__dirname, './app'),
-            loader: 'babel-loader',
-            query: {
-                presets: ['react', 'es2015', "stage-2"]
-            }
-        }]
+        rules: [
+            {
+                test: /jsx?$/,
+                include: resolve(__dirname, './app'),
+                use: [{
+                    loader: 'babel-loader',
+                    query: { presets: ['react', 'es2015', "stage-2"] }
+                }]
+            },
+            {
+                test: /(\.global\.css$|react-select.css)/,
+                use: [
+                    {
+                        loader: 'style-loader',
+                    },
+                    {
+                        loader: 'css-loader',
+                    },
+                ],
+            },
+            {
+                test: /^((?!\.global|react-select).)*\.css$/,
+                use: [
+                    {
+                        loader: 'style-loader',
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true,
+                            importLoaders: 1,
+                            sourceMap: true,
+                        },
+                    },
+                ]
+            }]
     }
-};
+}
