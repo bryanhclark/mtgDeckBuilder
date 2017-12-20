@@ -6,19 +6,16 @@ const fs = require('fs');
 const sequelize = require('sequelize');
 const bodyParser = require('body-parser');
 const path = require('path');
-const {
-    db
-} = require('./db/models/index')
+const { db } = require('./db/models/index')
 
 
 app.use(morgan('dev'));
 
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use('/api', require('./api'));
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));

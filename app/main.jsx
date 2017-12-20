@@ -2,12 +2,16 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
-
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import store from './store'
-import Home from './components/Home'
+import DeckBuilder from './components/DeckBuilderContainer'
 
 render(
-    <Home />
+    <MuiThemeProvider>
+        <Provider store={store}>
+            <DeckBuilder />
+        </Provider>
+    </MuiThemeProvider>
     ,
     document.getElementById('main')
 )
