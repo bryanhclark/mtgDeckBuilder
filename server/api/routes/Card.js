@@ -8,8 +8,23 @@ router.get('/allcards', (req, res, next) => {
         attributes: ['name', "multiverseid"]
     })
         .then(cards => {
-
             res.send(cards);
+        })
+        .catch(next);
+})
+
+router.get('/filteredcards/:value', (req, res, next) => {
+    Card.findAll({
+        attributes: ['name'],
+        where: {
+            name: {
+                $like: req.params.value + '%'
+            }
+        },
+        limit: 10
+    })
+        .then(cards => {
+            res.send(cards)
         })
         .catch(next);
 })

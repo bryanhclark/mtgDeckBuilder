@@ -35,7 +35,11 @@ export const fetchCards = () => {
 
 export const fetchFilteredCards = (value) => {
     return function thunk(dispatch) {
-        axios.get('api/cards/filteredcards', )
+        axios.get('api/cards/filteredcards/' + value)
+            .then(res => {
+                dispatch(getFilteredCards(res.data))
+            })
+            .catch(console.error)
     }
 }
 
@@ -46,6 +50,8 @@ const cardReducer = (state = [], action) => {
     switch (action.type) {
         case GET_ALL_CARDS:
             return action.cards
+        case GET_FILTERED_CARDS:
+            return action.filteredCards
         default:
             return state
     }
