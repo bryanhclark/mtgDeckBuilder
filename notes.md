@@ -3,11 +3,11 @@
 ##Things Accomplished
 -1)Got mtgjson object in folder and can now access data within it
 ##Things to do
--1)Identify which set properties we want to pay attention to
--2)Make sure each set has all of those properties
--3)start creating tables based on sets
+-1) Identify which set properties we want to pay attention to
+-2) Make sure each set has all of those properties
+-3) start creating tables based on sets
 -4) format of card/deck info on DOM after query? - check out gatherer format
--
+
 
 ##GOALS
 -deckbuilder/mana calculator
