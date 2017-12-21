@@ -92,19 +92,25 @@ let MiniTestDeck = [
   {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
   {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'}
   ]
+let MicroTestDeck = [
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{2}'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  ]
 let TargetCard = {
   name: 'Card',
   types:'{Other}',
   type:'Other',
-  manaCost: '{2}'
+  manaCost: '{W}'
 }
 
-console.log(probabilityOfPlayingCard(10,TargetCard,MiniTestDeck))
+console.log(probabilityOfPlayingCard(2,TargetCard,MicroTestDeck,0))
 
 // computes probability
 
-function probabilityOfPlayingCard(cardsDrawn,card,deck){
-  if(cardPlayable(cardsDrawn,card,deck)){
+function probabilityOfPlayingCard(cardsDrawn,card,deck,startingHandSize=7){
+  if(cardPlayable(cardsDrawn,card,deck,startingHandSize)){
     let goodHands = parseHands(cardsDrawn,card,deck)
     let P = 0
     let deckSize = deck.length
@@ -250,7 +256,7 @@ function cardCost(card){
 
 // boolean of if deck can play card
 // ***probably needs work***
-function cardPlayable(draws,card,deck){
+function cardPlayable(draws,card,deck,startingHandSize = 7){
   deck = deck.copy()
   let cost = cardCost(card)
   let convertedManaCost = Object.keys(cost).reduce((a,b)=>a+cost[b],0)
@@ -261,7 +267,7 @@ function cardPlayable(draws,card,deck){
     }
     return a
   },{})
-  let turnCondition = draws-7 >= convertedManaCost
+  let turnCondition = draws-startingHandSize >= convertedManaCost
   let manaCondition = Object.keys(manaBase).reduce((a,b)=>a+manaBase[b],0) >= convertedManaCost
   Object.keys(cost).forEach(v=>{
     if(manaBase[v]){
