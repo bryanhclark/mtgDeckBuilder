@@ -15,7 +15,7 @@ router.get('/allcards', (req, res, next) => {
 
 router.get('/filteredcards/:value', (req, res, next) => {
     Card.findAll({
-        attributes: ['name'],
+        attributes: ['name', "multiverseid"],
         where: {
             name: {
                 $like: req.params.value + '%'

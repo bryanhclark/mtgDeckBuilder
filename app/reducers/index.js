@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux'
-import cards from './cards'
+import filteredCards from './cards'
+import deckReducer from './Deck'
 
 
 
 const rootReducer = combineReducers({
-    cards
+    filteredCards,
+    deckReducer
 })
 
 

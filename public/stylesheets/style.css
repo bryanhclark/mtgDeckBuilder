@@ -1,3 +1,20 @@
 #mainSelect{
     width: 50%;
 }
+
+.cardView{
+    display:inline;
+    width: 300px;
+}
+
+img{
+    height: 75px;
+}
+
+#deckList{
+    display: inline;
+}
+
+#cardViewContainer{
+    display:inline;
+}

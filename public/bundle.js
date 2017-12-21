@@ -5706,7 +5706,7 @@ module.exports = { "default": __webpack_require__(257), __esModule: true };
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.fetchFilteredCards = exports.fetchCards = exports.getFilteredCards = exports.getAllCards = undefined;
+exports.fetchFilteredCards = exports.getFilteredCards = undefined;
 
 var _axios = __webpack_require__(263);
 
@@ -5719,12 +5719,13 @@ var GET_ALL_CARDS = 'GET_ALL_CARDS';
 var GET_FILTERED_CARDS = 'GET_FILTERED_CARDS';
 
 //action creator
-var getAllCards = exports.getAllCards = function getAllCards(cards) {
-    return {
-        type: GET_ALL_CARDS,
-        cards: cards
-    };
-};
+// export const getAllCards = (cards) => {
+//     return {
+//         type: GET_ALL_CARDS,
+//         cards
+//     }
+// }
+
 
 var getFilteredCards = exports.getFilteredCards = function getFilteredCards(filteredCards) {
     return {
@@ -5733,14 +5734,16 @@ var getFilteredCards = exports.getFilteredCards = function getFilteredCards(filt
     };
 };
 
-var fetchCards = exports.fetchCards = function fetchCards() {
-    return function thunk(dispatch) {
-        _axios2.default.get('/api/cards/allcards').then(function (res) {
-            console.log('in response');
-            dispatch(getAllCards(res.data));
-        }).catch(console.error);
-    };
-};
+// export const fetchCards = () => {
+//     return function thunk(dispatch) {
+//         axios.get('/api/cards/allcards')
+//             .then(res => {
+//                 console.log('in response')
+//                 dispatch(getAllCards(res.data))
+//             })
+//             .catch(console.error)
+//     }
+// }
 
 var fetchFilteredCards = exports.fetchFilteredCards = function fetchFilteredCards(value) {
     return function thunk(dispatch) {
@@ -5757,8 +5760,6 @@ var cardReducer = function cardReducer() {
     var action = arguments[1];
 
     switch (action.type) {
-        case GET_ALL_CARDS:
-            return action.cards;
         case GET_FILTERED_CARDS:
             return action.filteredCards;
         default:
@@ -33534,10 +33535,15 @@ var _cards = __webpack_require__(119);
 
 var _cards2 = _interopRequireDefault(_cards);
 
+var _Deck = __webpack_require__(359);
+
+var _Deck2 = _interopRequireDefault(_Deck);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var rootReducer = (0, _redux.combineReducers)({
-    cards: _cards2.default
+    filteredCards: _cards2.default,
+    deckReducer: _Deck2.default
 });
 
 exports.default = rootReducer;
@@ -34500,9 +34506,15 @@ var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
 var _cards = __webpack_require__(119);
 
+var _Deck = __webpack_require__(359);
+
 var _AutoComplete = __webpack_require__(330);
 
 var _AutoComplete2 = _interopRequireDefault(_AutoComplete);
+
+var _DeckList = __webpack_require__(360);
+
+var _DeckList2 = _interopRequireDefault(_DeckList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34521,8 +34533,10 @@ var DeckBuilderContainer = function (_Component) {
         var _this = _possibleConstructorReturn(this, (DeckBuilderContainer.__proto__ || Object.getPrototypeOf(DeckBuilderContainer)).call(this, props));
 
         _this.handleUpdateInput = function (value) {
+            console.log(value);
             if (value) {
                 _this.props.loadFilteredCards(value);
+                _this.setState({ cards: _this.props.filteredCards });
             }
         };
 
@@ -34530,7 +34544,12 @@ var DeckBuilderContainer = function (_Component) {
             var names = cards.map(function (card) {
                 return card.name;
             });
-            _this.setState({ names: names });
+            _this.setState({ names: names, cards: cards });
+        };
+
+        _this.handleSubmit = function (event) {
+            event.preventDefault();
+            _this.props.addNewCard(_this.props.filteredCards[0]);
         };
 
         _this.state = {
@@ -34539,19 +34558,18 @@ var DeckBuilderContainer = function (_Component) {
         };
         _this.handleUpdateInput = _this.handleUpdateInput.bind(_this);
         _this.getCardNames = _this.getCardNames.bind(_this);
+        _this.handleSubmit = _this.handleSubmit.bind(_this);
         return _this;
     }
 
     _createClass(DeckBuilderContainer, [{
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps() {
-            // this.setState({ cards: this.props.cards })
-            this.getCardNames(this.props.cards);
+            this.getCardNames(this.props.filteredCards);
         }
     }, {
         key: 'render',
         value: function render() {
-            console.log(this.state.cards);
             return _react2.default.createElement(
                 'div',
                 null,
@@ -34563,11 +34581,21 @@ var DeckBuilderContainer = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     null,
-                    _react2.default.createElement(_AutoComplete2.default, {
-                        hintText: 'Type anything',
-                        dataSource: this.state.names,
-                        onUpdateInput: this.handleUpdateInput
-                    })
+                    _react2.default.createElement(
+                        'form',
+                        { method: 'POST', onSubmit: this.handleSubmit },
+                        _react2.default.createElement(_AutoComplete2.default, {
+                            hintText: 'Type anything',
+                            dataSource: this.state.names,
+                            onUpdateInput: this.handleUpdateInput
+                        }),
+                        _react2.default.createElement(_FlatButton2.default, { label: 'Submit', primary: true, type: 'submit' })
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { id: 'cardViewContainer' },
+                    _react2.default.createElement(_DeckList2.default, { deckList: this.props.deckList })
                 )
             );
         }
@@ -34578,7 +34606,8 @@ var DeckBuilderContainer = function (_Component) {
 
 function mapStateToProps(storeState) {
     return {
-        cards: storeState.cards
+        filteredCards: storeState.filteredCards,
+        deckList: storeState.deckReducer
     };
 }
 
@@ -34589,6 +34618,10 @@ function mapDispatchToProps(dispatch) {
         },
         loadFilteredCards: function loadFilteredCards(value) {
             dispatch((0, _cards.fetchFilteredCards)(value));
+        },
+        addNewCard: function addNewCard(card) {
+            console.log(card);
+            dispatch((0, _Deck.addCardToDeck)(card));
         }
     };
 }
@@ -45165,6 +45198,80 @@ Divider.contextTypes = {
 
 exports.default = Divider;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 359 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var ADD_CARD_TO_DECK = 'ADD_CARD_TO_DECK';
+
+var addCardToDeck = exports.addCardToDeck = function addCardToDeck(newCard) {
+    return {
+        type: ADD_CARD_TO_DECK,
+        newCard: newCard
+    };
+};
+
+var deckReducer = function deckReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case ADD_CARD_TO_DECK:
+            return [].concat(_toConsumableArray(state), [action.newCard]);
+        default:
+            return state;
+    }
+};
+
+exports.default = deckReducer;
+
+/***/ }),
+/* 360 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var DeckList = function DeckList(props) {
+    return _react2.default.createElement(
+        'div',
+        { id: 'deckList' },
+        props.deckList.map(function (card) {
+            return _react2.default.createElement(
+                'div',
+                { key: card.multiverseid, className: 'cardView' },
+                _react2.default.createElement('img', { src: 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=' + card.multiverseid + '&type=card' }),
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    card.name
+                )
+            );
+        })
+    );
+};
+
+exports.default = DeckList;
 
 /***/ })
 /******/ ]);
