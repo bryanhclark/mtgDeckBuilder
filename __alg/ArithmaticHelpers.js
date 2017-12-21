@@ -1,4 +1,3 @@
-// probability calculators
 
 // fuckJS
 Array.prototype.copy = function(){
@@ -9,147 +8,128 @@ Array.prototype.copy = function(){
   },[])
 }
 
-function probabilityOfPlayingCard(cardsDrawn,card,deck,independent){
-  if(isCardPlayable(card,cardsDrawn,deck)){
-    let goodHands = parseHands(cardsDrawn,card,deck,independent)
-    let P = 0
-    cardsDrawn = (independent) ? cardsDrawn : cardsDrawn-1
-    let deckSize = (independent) ? deck.length : deck.length-1
-    goodHands.forEach(hand=>{
-      P+=parseFloat(hypergeometric(cardsDrawn,hand,deckSize))
-    })
-    return P.toFixed(6)
-  }
-  else return 0
-}
-
-// fisher-yates
-function shuffle(a) {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-}
-
-// test probabilityOfPlayingCard
-function test(deck,card,draws){
-  shuffle(deck)
-  let mana = deck.slice(0,draws).reduce((a,b)=>{
-    switch (b.name){
-      case 'Island':
-        if(a.U) a.U++
-        else a.U=1
-        break
-      case 'Forest':
-        if(a.G) a.G++
-        else a.G=1
-        break
-      case 'Mountain':
-        if(a.R) a.R++
-        else a.R=1
-        break
-      case 'Plains':
-        if(a.W) a.W++
-        else a.W=1
-        break
-      case 'Swamp':
-        if(a.B) a.B++
-        else a.B=1
-        break
-    }
-    return a
-  },{})
-  let cardCost = card.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
-    if(Object.keys(a).includes(b)){
-      a[b]++
-    }else{
-      if(!['B','G','W','R','U'].includes(b)) a.C = (!isNaN(parseInt(b))) ? parseInt(b) : 0
-      else a[b]=1
-    }
-    return a
-  },{})
-
-  let target = deck.slice(0,draws).map(v=>v.name).includes(card.name)
-  let manaC = Object.keys(cardCost).reduce((a,b)=>{
-    if(mana[b]<cardCost[b] || !mana[b]) return a && false
-    else return a
-  },true)
-  let manaT = Object.keys(cardCost).reduce((a,b)=>a+cardCost[b],0) <= Object.keys(mana).reduce((a,b)=>a+mana[b],0)
-
-  return (target && manaT && manaC) ? 1: 0
-}
-
 let TestDeck = [
-  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Island' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
   {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
-  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{U}{R}{G}'},
-  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Plains' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G,W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{2}'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G,W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{2}'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G,W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{2}'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'}
+  ]
+let MiniTestDeck = [
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'IslandSwamp' , ProducibleManaColors: 'U,B' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Forest' , ProducibleManaColors: 'G,W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{2}'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
   {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'}
   ]
 let TargetCard = {
   name: 'Card',
   types:'{Other}',
   type:'Other',
-  manaCost: '{U}{W}{G}'
+  manaCost: '{2}'
 }
-console.time('PT: ')
-console.log('Prob = ',probabilityOfPlayingCard(10,TargetCard,TestDeck,true))
-console.timeEnd('PT: ')
 
-let sum = 0
-let tests = 100000
-console.time('ST: ')
-for(var i=0;i<tests;i++){
-  sum+=test(TestDeck,TargetCard,10)
+console.log(probabilityOfPlayingCard(10,TargetCard,MiniTestDeck))
+
+// computes probability
+
+function probabilityOfPlayingCard(cardsDrawn,card,deck){
+  if(cardPlayable(cardsDrawn,card,deck)){
+    let goodHands = parseHands(cardsDrawn,card,deck)
+    let P = 0
+    let deckSize = deck.length
+    let memo = {}
+    goodHands.forEach(hand=>{
+      P+=parseFloat(hypergeometric(cardsDrawn,hand,deckSize,memo))
+    })
+    return P.toFixed(8)
+  }
+  else return 0
 }
-console.log('Stat = ',parseFloat(sum)/parseFloat(tests))
-console.timeEnd('ST: ')
 
+// enumerating every possible playable-hand given a card and a deck
+// ***probably needs work***
+function parseHands(numCards,card,deck){
+  // card's cost
 
-// parseBins takes a card and a deck and returns an array of value groups which represent:
-// ["number of this type of card in the hand", "number of this type of card in the deck",LABEL]
-// each of the arrays can be directly input into the probability calc
-function parseHands(numCards,card,deck,independent){
-
-  // independant is a boolean denoting if the target card is assumed to be in the hand or not
-  // numCards is the number of total cards drawn at a given turn of the game
-
-  // currently does not work with all edge cases e.x.: {1}{X}{B} -> { colorless: 0, B: 1 }
-  let cardCost = card.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
-    if(Object.keys(a).includes(b)){
-      a[b]++
-    }else{
-      if(!['B','G','W','R','U'].includes(b)) a.C = (!isNaN(parseInt(b))) ? parseInt(b) : 0
-      else a[b]=1
-    }
-    return a
-  },{})
-
-  let convertedManaCost = Object.keys(cardCost).reduce((a,b)=>{
-    return a+=cardCost[b]
+  let cost = cardCost(card)
+  let convertedManaCost = Object.keys(cost).reduce((a,b)=>{
+    return a+=cost[b]
   },0)
+  let colorCost = convertedManaCost-(cost.C||0)
 
-  let colorCost = convertedManaCost-(cardCost.C||0)
-
-  // objectify deck into manaproducing, non-manaproducing, and target card groups
-  let deckBins = (independent)
-    ? deck.reduce((a,b)=>{
+  // deck bins: target, lands, other
+  let deckBins = deck.reduce((a,b)=>{
       // reducer for independent probability
       if(b.types.slice(1,5)==='Land'){
         a.L++
@@ -162,16 +142,6 @@ function parseHands(numCards,card,deck,independent){
       }
       return a
     },{O:0,T:0,L:0})
-    : deck.reduce((a,b)=>{
-      // reducer for independent probability
-      if(b.types.slice(1,5)==='Land'){
-        a.L++
-      }
-      else{
-        a.O++
-      }
-      return a
-    },{O:0,L:0})
 
   // arrafified deckBins
   let deckArray = []
@@ -191,82 +161,140 @@ function parseHands(numCards,card,deck,independent){
     deckArray.push([q,deckBins[Object.keys(deckBins)[i]],Object.keys(deckBins)[i]])
   }
 
-  // objectify lands into relevant bins
+  // landBins: each variety of different mana-producers
   let landBins = deck.reduce((a,b)=>{
-    if(b.types.slice(1,5)==='Land'){
-      switch(b.name){
-        case 'Island':
-          if(a.U) a.U++
-          else a.U=1
-          break;
-        case 'Forest':
-          if(a.G) a.G++
-          else a.G=1
-          break;
-        case 'Swamp':
-          if(a.B) a.B++
-          else a.B=1
-          break;
-        case 'Plains':
-          if(a.W) a.W++
-          else a.W=1
-          break;
-        case 'Mountain':
-          if(a.R) a.R++
-          else a.R=1
-          break;
-        default:
-          if(a[b.name]) a[name]++
-          else a[b.name]=1
-          break;
-      }
+    if(b.ProducibleManaColors){
+      if(a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++
+      else a[b.ProducibleManaColors]=1
     }
     return a
   },{})
 
-  // arrafified landBins
-  let landArray = []
-  for(var j=0;j<Object.keys(landBins).length;j++){
-    landArray.push([(cardCost[Object.keys(landBins)[j]])?cardCost[Object.keys(landBins)[j]]:0,landBins[Object.keys(landBins)[j]],Object.keys(landBins)[j]])
-  }
+  // multichoosing for necessary colored mana
+  let necessaryManaOptions = Object.keys(cost).reduce((a,b)=>{
+
+    let options = Object.keys(landBins).reduce((c,d)=>{
+      if(d.split(',').includes(b)){
+        c.push([0,landBins[d],d])
+      }
+      return c
+    },[])
+
+    if(options.length){
+      let color = []
+      multichoose(cost[b],options,color)
+      return color.reduce((c,d)=>{
+        return c.concat(a.map(v=>v.concat(d)))
+      },[])
+    }
+    else return a
+  },[[]])
+
+  // adding remaining bins to each index of 'necessaryManaOptions'
+  let binnedColors = necessaryManaOptions[0].map(v=>v[2]) || []
+  let unbinnedColors = Object.keys(landBins).reduce((x,y)=>(!binnedColors.includes(y))?x.concat(y):x,[])
+  necessaryManaOptions = necessaryManaOptions.map(v=>v.concat(unbinnedColors.map(w=>{
+    return [0,landBins[w],w]
+  })))
+
+  // multichoosing remaining lands for colorless mana
+  let ledger = {}
+  let landChoices = necessaryManaOptions.reduce((a,b)=>{
+    let choices = []
+    multichoose(convertedManaCost-colorCost,b,choices)
+    choices.forEach(v=>{
+      a.push(v)
+      // if(!ledger[v.toString()]){
+      //   ledger[v.toString()] = true
+      //   a.push(v)
+      // }
+    })
+    return a
+  },[])
 
   // multichoosing between lands and nonlands
   let viableHands = []
   multichoose(numCards-convertedManaCost-1,deckArray,viableHands)
 
-  //multichoosing lands
-  viableHands = viableHands.reduce((a,b)=>{
-    let landChoices = []
-    multichoose(b[b.length-1][0]-colorCost,landArray,landChoices)
-    return a.concat(landChoices.map(v=>b.slice(0,-1).concat(v)))
+  // multichoosing remaining unnecessary lands
+  let v = viableHands.reduce((a,b)=>{
+    let hands = []
+    landChoices.forEach(v=>{
+      multichoose(b[b.length-1][0]-convertedManaCost,v,hands)
+    })
+    hands.forEach(v=>{
+      if(!ledger[v.toString()]){
+        ledger[v.toString()] = true
+        a.push(b.slice(0,2).concat(v))
+      }
+    })
+    return a
   },[])
 
-  return viableHands
+  return v
 }
 
-// tests for parseHands
+// arrayifies manaCost
 
-// let testdeck = [
-//   {name: 'Mountain' , types:'{Land,Creature}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Forest' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Swamp' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'Swamp' , types:'{Land}' , type:'Basic Land - ...'},
-//   {name: 'testcard' , types:'{Other}' , type: 'Creature' , manaCost: '{1}{B}{G}'},
-//   {name: 'testcard' , types:'{Other}' , type: 'Creature' , manaCost: '{1}{B}{G}'},
-//   ]
-// let testcard = {name: 'testcard', manaCost: '{1}{B}{G}'}
-// parseHands(4,testcard,testdeck,true)
+function cardCost(card){
+  return card.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
+    if(Object.keys(a).includes(b)){
+      a[b]++
+    }else{
+      if(!['B','G','W','R','U'].includes(b)) a.C = (!isNaN(parseInt(b))) ? parseInt(b) : 0
+      else a[b]=1
+    }
+    return a
+  },{})
+}
 
-
-// bins: an array of bins with balls in them and maximum capacities
-// numBalls: number of balls needing to be distributed
-// combinations: global variable, collection of all ball-bin distributions
-// combination: current combination which is being mutated
+// boolean of if deck can play card
+// ***probably needs work***
+function cardPlayable(draws,card,deck){
+  deck = deck.copy()
+  let cost = cardCost(card)
+  let convertedManaCost = Object.keys(cost).reduce((a,b)=>a+cost[b],0)
+  let manaBase = deck.reduce((a,b)=>{
+    if(b.ProducibleManaColors){
+      if(a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++
+      a[b.ProducibleManaColors]=1
+    }
+    return a
+  },{})
+  let turnCondition = draws-7 >= convertedManaCost
+  let manaCondition = Object.keys(manaBase).reduce((a,b)=>a+manaBase[b],0) >= convertedManaCost
+  Object.keys(cost).forEach(v=>{
+    if(manaBase[v]){
+      if(cost[v]>manaBase[v]){
+        manaBase[v]=0
+        cost[v]-=manaBase[v]
+      }
+      else{
+        manaBase[v]-=cost[v]
+        cost[v] = 0
+      }
+    }
+    else if(cost[v]){
+      Object.keys(manaBase).forEach(w=>{
+        if(w.split(',').includes(v) && manaBase[w]){
+          if(cost[v]>manaBase[w]){
+            manaBase[w]=0
+            cost[v]-=manaBase[w]
+          }
+          else{
+            manaBase[w]-=cost[v]
+            cost[v] = 0
+          }
+        }
+      })
+    }
+  })
+  let colorCondition = Object.keys(cost).reduce((a,b)=>(b==='C')?a:(cost[b]===0)?a&&true:false)
+  return colorCondition && manaCondition && turnCondition
+}
 
 function multichoose(numBalls,bins,combinations,com = bins.copy()){
+
   // if out of balls, then push to combinations
   if(numBalls===0){
     combinations.push(com.copy())
@@ -288,107 +316,34 @@ function multichoose(numBalls,bins,combinations,com = bins.copy()){
   }
 }
 
-// tests for multichoose
+// hypergeometric gives probability for a given hand, memoized (best to pass in a memo from higher scope)
 
-// let choices = []
-// let bins = [[1,2,"b"],[0,3,"s"],[0,1,"a"],[0,4,"x"]]
-// let com = bins.slice(0)
-// multichoose(4,bins,choices)
-
-// console.log('choices: ',choices)
-
-// isCardPlayable returns boolean (if number of turns is sufficient to play card)
-
-function isCardPlayable(card,draws,deck){
-  // card is intended card to play
-  // draws is the total number of cards drawn
-  let turns = draws-7 >= card.manaCost.split('{').map(v=>v.slice(0,-1)).slice(1).reduce((a,b)=>{
-    if(['B','R','W','G','U'].includes(b)) return a+1
-    else return a+parseInt(b)
-  },0)
-  if(!turns) return false
-  let cardCost = card.manaCost.split('{').slice(1).map(v=>v.slice(0,-1)).reduce((a,b)=>{
-    if(Object.keys(a).includes(b)){
-      a[b]++
-    }else{
-      if(!['B','G','W','R','U'].includes(b)) a.C = (!isNaN(parseInt(b))) ? parseInt(b) : 0
-      else a[b]=1
-    }
-    return a
-  },{})
-
-  let manaComp = deck.reduce((a,b)=>{
-    switch (b.name){
-      case 'Island':
-        a.U++
-        break
-      case 'Mountain':
-        a.R++
-        break
-      case 'Forest':
-        a.G++
-        break
-      case 'Swamp':
-        a.B++
-        break
-      case 'Plains':
-        a.W++
-        break
-    }
-    return a
-  },{W:0,R:0,G:0,B:0,U:0})
-
-  for(var i=0;i<Object.keys(cardCost).length;i++){
-    if(manaComp[Object.keys(cardCost)[i]]<cardCost[Object.keys(cardCost)[i]]) return false
-  }
-  return true
-}
-
-// tests for isCardPlayable
-
-// let testcard = {manaCost: '{2}{B}{U}'}
-// let testdraws = 11
-
-// console.log(isCardPlayable(testcard,testdraws))
-
-// hypergeometric gives probability for a given hand
-
-function hypergeometric(draws,cards,deckSize){
+function hypergeometric(draws,cards,deckSize,memo = {}){
   // starting hand size determines if enough turns have elapsed to play the necessary mana
   // draws must be the number of expected total draws
   // deckSize must be the total size of the deck
   // cards must be formatted as an array of pairs of quantities saught and quantities in deck, may also have additional entries but will have no baring on calculation
   draws = draws.toString()
   deckSize = deckSize.toString()
-  cards = cards.map(v=>v.map(w=>w.toString()))
-  let denomenator = nCk(deckSize,draws)
+  if(!memo[deckSize+','+draws]){
+      memo[deckSize+','+draws] = nCk(deckSize,draws)
+    }
+  let denomenator = memo[deckSize+','+draws]
   let combinations = '1'
   for (var i=0;i<cards.length;i++){
-    combinations = multiplyString(combinations,nCk(cards[i][1],cards[i][0]))
+    if(!memo[cards[i][1].toString()+','+cards[i][0].toString()]){
+      memo[cards[i][1].toString()+','+cards[i][0].toString()] = nCk(cards[i][1].toString(),cards[i][0].toString())
+    }
+    combinations = multiplyString(combinations,memo[cards[i][1].toString()+','+cards[i][0].toString()])
   }
   let numerator = (parseInt(draws) < cards.reduce((a,b)=>a+parseInt(b[0]),0)) ? '0' : combinations
   return divideString(numerator,denomenator,8)
 }
 
-// tests for hypergeometric
-
-// let draws = '2'
-// let cards = [['1','2','labelX'],['1','2','labelY']]
-// let deck = '4'
-
-// console.time('hypergeometric Time')
-// console.log(hypergeometric(draws,cards,deck))
-// console.time('hypergeometric Time')
-
-
-
-
-
-
 // arithmatic helper functions for large numbers
 
 // combinatorics
-
+// *not all of these ended up being necessary, should keep around a while just in case*
 function StirlingSecond(n, k) {
   // // input check:
   // console.log('Stirling: ',n,k)
@@ -552,22 +507,3 @@ function greaterThan(x, y) {
   if (x.length === y.length) return x > y;
   else return x.length > y.length;
 }
-
-// tests for arthimatic
-
-// let x = '60';
-// let y = '30';
-
-// console.time('StirlingSecond Time');
-// let result = StirlingSecond(x, y);
-// console.log(result, ' Length: ', result.length);
-// console.timeEnd('StirlingSecond Time');
-
-// let a = '456'
-// let b = '1234'
-// let c = '2'
-
-// console.time('StringPower Time');
-// let result = StringPower(StringPower(a,b),c);
-// console.log(result,'\n=',a,'^',b,'^',c, '\nLength: ', result.length);
-// console.timeEnd('StringPower Time');
