@@ -547,7 +547,7 @@ console.time('prob');
 console.log(probabilityOfPlayingCard(9, TargetCard, TestDeck));
 console.timeEnd('prob');
 console.time('stat');
-console.log(simDeck(9, TargetCard, TestDeck, 2000));
+console.log(simDeck(9, TargetCard, TestDeck, 1000));
 console.timeEnd('stat');
 
 // computes statistic
@@ -574,7 +574,10 @@ function probabilityOfPlayingCard(
   startingHandSize = 7
 ) {
   if (cardPlayable(cardsDrawn, card, deck, startingHandSize)) {
+    // creating abstracted hands
     let goodHands = parseHands(cardsDrawn, card, deck);
+
+    // computing probability of each hand and adding to tally
     let P = 0;
     let deckSize = deck.length;
     let memo = {};
@@ -586,7 +589,7 @@ function probabilityOfPlayingCard(
 }
 
 // enumerating every possible playable-hand given a card and a deck
-// ***probably needs work***
+// *works well atm
 function parseHands(numCards, card, deck) {
   // card's cost
 
@@ -710,11 +713,12 @@ function parseHands(numCards, card, deck) {
     let choices = [];
     multichoose(convertedManaCost - colorCost, b, choices);
     choices.forEach(v => {
-      a.push(v);
-      // if(!ledger[v.toString()]){
-      //   ledger[v.toString()] = true
-      //   a.push(v)
-      // }
+      // * possibly unnecessary memoization
+      // a.push(v);
+      if (!ledger[v.toString()]) {
+        ledger[v.toString()] = true;
+        a.push(v);
+      }
     });
     return a;
   }, []);
@@ -774,7 +778,7 @@ function shuffle(a) {
 }
 
 // boolean of if deck can play card
-// ***probably needs work***
+// *works well atm
 function cardPlayable(draws, card, deck, startingHandSize = 7) {
   deck = deck.copy();
   let cost = cardCost(card);
@@ -803,8 +807,6 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
     }
   }, true);
   let includesCondition = deck.map(v => v.name).includes(card.name);
-
-  // console.log('\n\n',deck.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),'\n',colorCondition,manaCondition, turnCondition, includesCondition)
 
   return colorCondition && manaCondition && turnCondition && includesCondition;
 }
