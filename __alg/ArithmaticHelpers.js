@@ -93,19 +93,37 @@ let MiniTestDeck = [
   {name: 'NotCard' , types:'{Other}' , type:'Other', manaCost: '{1}{R}{R}'}
   ]
 let MicroTestDeck = [
-  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{2}'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{W}{U}{U}'},
+  {name: 'Card' , types:'{Other}' , type:'Other', manaCost: '{W}{U}{U}'},
   {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Plains' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
-  {name: 'Plains' , ProducibleManaColors: 'W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Plains-Island' , ProducibleManaColors: 'U,W' , types:'{Land}' , type:'Basic Land - ...'},
+  {name: 'Island' , ProducibleManaColors: 'U' , types:'{Land}' , type:'Basic Land - ...'},
   ]
 let TargetCard = {
   name: 'Card',
   types:'{Other}',
   type:'Other',
-  manaCost: '{W}'
+  manaCost: '{W}{U}{U}'
 }
+console.time('prob')
+console.log(probabilityOfPlayingCard(4,TargetCard,TestDeck,0))
+console.timeEnd('prob')
+console.time('stat')
+console.log(simDeck(4,TargetCard,TestDeck,10,0))
+console.timeEnd('stat')
+// computes statistic
 
-console.log(probabilityOfPlayingCard(2,TargetCard,MicroTestDeck,0))
+function simDeck(cardsDrawn,card,deck,trials,startingHandSize = 7){
+  let sum = 0
+  let hand
+  for(var i=trials;i>0;i--){
+    shuffle(deck)
+    hand = deck.slice(0,cardsDrawn)
+    console.log(hand.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),cardPlayable(cardsDrawn,card,hand,startingHandSize))
+    sum = (cardPlayable(cardsDrawn,card,hand,startingHandSize))?sum+=1:sum
+  }
+  return sum/trials
+}
 
 // computes probability
 
@@ -196,6 +214,26 @@ function parseHands(numCards,card,deck){
     else return a
   },[[]])
 
+  // fixing cases where multicolored lands could be used for multiple necessary color
+  if(necessaryManaOptions.map(w=>w.map(x=>x[2]).map((v,i,a)=>a.slice(i+1).includes(v))).map(w=>w.reduce((a,b)=>a||b)).reduce((a,b)=>a||b)){
+    necessaryManaOptions = necessaryManaOptions.reduce((a,b)=>{
+      // turns each hand into an object, consolidating duplicated mana-producers
+      let ObjectifiedHand = b.reduce((c,d)=>{
+        if(c[d[2]]) c[d[2]][0]+=d[0]
+        else c[d[2]] = [d[0],d[1]]
+        return c
+      },{})
+      //sees if object has overfilled any mana-producing type, only retains hand otherwise
+      let hand = Object.keys(ObjectifiedHand).reduce((c,d)=>{
+        if(ObjectifiedHand[d][0]>ObjectifiedHand[d][1]) c.push(false)
+        else if(!c.includes(false)) c.push([ObjectifiedHand[d][0],ObjectifiedHand[d][1],d])
+        return c
+      },[])
+      if(!hand.includes(false)) a.push(hand)
+      return a
+    },[])
+  }
+
   // adding remaining bins to each index of 'necessaryManaOptions'
   let binnedColors = necessaryManaOptions[0].map(v=>v[2]) || []
   let unbinnedColors = Object.keys(landBins).reduce((x,y)=>(!binnedColors.includes(y))?x.concat(y):x,[])
@@ -254,6 +292,17 @@ function cardCost(card){
   },{})
 }
 
+// fisher-yates
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+}
+
 // boolean of if deck can play card
 // ***probably needs work***
 function cardPlayable(draws,card,deck,startingHandSize = 7){
@@ -268,35 +317,23 @@ function cardPlayable(draws,card,deck,startingHandSize = 7){
     return a
   },{})
   let turnCondition = draws-startingHandSize >= convertedManaCost
-  let manaCondition = Object.keys(manaBase).reduce((a,b)=>a+manaBase[b],0) >= convertedManaCost
-  Object.keys(cost).forEach(v=>{
-    if(manaBase[v]){
-      if(cost[v]>manaBase[v]){
-        manaBase[v]=0
-        cost[v]-=manaBase[v]
-      }
-      else{
-        manaBase[v]-=cost[v]
-        cost[v] = 0
-      }
-    }
-    else if(cost[v]){
-      Object.keys(manaBase).forEach(w=>{
-        if(w.split(',').includes(v) && manaBase[w]){
-          if(cost[v]>manaBase[w]){
-            manaBase[w]=0
-            cost[v]-=manaBase[w]
-          }
-          else{
-            manaBase[w]-=cost[v]
-            cost[v] = 0
-          }
-        }
+  let manaCondition = Object.keys(manaBase).reduce((a,b)=>a+ manaBase[b],0) >= convertedManaCost
+
+  // ** very important, doesnt work properly **
+  let colorCondition = Object.keys(cost).reduce((a,b)=>{
+    if(cost[b]<=manaBase[b]) return a && true
+    else{
+      Object.keys(manaBase).forEach(v=>{
+        if(v.split(',').includes(b)) cost[b]-=Math.min(manaBase[v],cost[b])
       })
+      console.log(b,cost[b])
+      return a && (cost[b]===0)
     }
-  })
-  let colorCondition = Object.keys(cost).reduce((a,b)=>(b==='C')?a:(cost[b]===0)?a&&true:false)
-  return colorCondition && manaCondition && turnCondition
+  },true)
+
+
+  let includesCondition = deck.map(v=>v.name).includes(card.name)
+  return colorCondition && manaCondition && turnCondition && includesCondition
 }
 
 function multichoose(numBalls,bins,combinations,com = bins.copy()){
