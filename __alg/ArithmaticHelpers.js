@@ -105,12 +105,14 @@ let TargetCard = {
   type:'Other',
   manaCost: '{W}{U}{U}'
 }
+
 console.time('prob')
 console.log(probabilityOfPlayingCard(4,TargetCard,TestDeck,0))
 console.timeEnd('prob')
 console.time('stat')
-console.log(simDeck(4,TargetCard,TestDeck,10,0))
+console.log(simDeck(4,TargetCard,TestDeck,1000000,0))
 console.timeEnd('stat')
+
 // computes statistic
 
 function simDeck(cardsDrawn,card,deck,trials,startingHandSize = 7){
@@ -119,7 +121,6 @@ function simDeck(cardsDrawn,card,deck,trials,startingHandSize = 7){
   for(var i=trials;i>0;i--){
     shuffle(deck)
     hand = deck.slice(0,cardsDrawn)
-    console.log(hand.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),cardPlayable(cardsDrawn,card,hand,startingHandSize))
     sum = (cardPlayable(cardsDrawn,card,hand,startingHandSize))?sum+=1:sum
   }
   return sum/trials
@@ -311,27 +312,25 @@ function cardPlayable(draws,card,deck,startingHandSize = 7){
   let convertedManaCost = Object.keys(cost).reduce((a,b)=>a+cost[b],0)
   let manaBase = deck.reduce((a,b)=>{
     if(b.ProducibleManaColors){
-      if(a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++
-      a[b.ProducibleManaColors]=1
+      if(a[b.ProducibleManaColors]) a[b.ProducibleManaColors] = a[b.ProducibleManaColors]+1
+      else a[b.ProducibleManaColors]=1
     }
     return a
   },{})
   let turnCondition = draws-startingHandSize >= convertedManaCost
   let manaCondition = Object.keys(manaBase).reduce((a,b)=>a+ manaBase[b],0) >= convertedManaCost
-
-  // ** very important, doesnt work properly **
   let colorCondition = Object.keys(cost).reduce((a,b)=>{
-    if(cost[b]<=manaBase[b]) return a && true
+    if(cost[b]<=manaBase[b]){
+      cost[b] = 0
+      return a && true
+    }
     else{
       Object.keys(manaBase).forEach(v=>{
         if(v.split(',').includes(b)) cost[b]-=Math.min(manaBase[v],cost[b])
       })
-      console.log(b,cost[b])
       return a && (cost[b]===0)
     }
   },true)
-
-
   let includesCondition = deck.map(v=>v.name).includes(card.name)
   return colorCondition && manaCondition && turnCondition && includesCondition
 }
