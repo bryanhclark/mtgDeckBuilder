@@ -547,7 +547,7 @@ console.time('prob');
 console.log(probabilityOfPlayingCard(9, TargetCard, TestDeck));
 console.timeEnd('prob');
 console.time('stat');
-console.log(simDeck(9, TargetCard, TestDeck, 1000));
+console.log(simDeck(9, TargetCard, TestDeck, 10000));
 console.timeEnd('stat');
 
 // computes statistic
