@@ -62,8 +62,31 @@ const Card = db.define('cards', {
         allowNull: true
     }
 
+},{
+    // this needs a lot of work
+    // best way to do so is probably with test decks once the UI is working. then change the hook when edge cases become apparent
+    getterMethods:{
+        ProducibleManaColors(){
+            return (card.type.indexOf('Land')===-1)
+            ? false
+            : card.text.split('\n').reduce((a,b)=>{
+                if(b.indexOf('{T}') < b.indexOf('Add')){
+                    if(b.indexOf('{B}')>0) a+='B'
+                    if(b.indexOf('{G}')>0) a+='G'
+                    if(b.indexOf('{W}')>0) a+='W'
+                    if(b.indexOf('{R}')>0) a+='R'
+                    if(b.indexOf('{U}')>0) a+='U'
+                    if(b.indexOf('{C}')>0) a+='C'
+                    if(b.indexOf('any color')>0) a+='WRGBU'
+                }
+                if(b.indexOf(`Sacrifice ${card.name}: Search`) > -1){
+                    a+='F'
+                }
+                return a
+            },'').split('').join(',')
+        }
+    }
 })
-
 
 
 const Deck = db.define('deck', {
