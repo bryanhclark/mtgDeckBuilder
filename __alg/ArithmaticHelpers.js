@@ -1,4 +1,4 @@
-// currently fetch lands are being handled as deck-thinners. their 'ProducibleManaColors' is currently comma-delimited names of basic land types it can fetch, this can be changed
+// currently fetch lands are being handled as deck-thinners. their 'ProducibleManaColors' is denoted is an 'F'
 
 let TestDeck = [
   {
