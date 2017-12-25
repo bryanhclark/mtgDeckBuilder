@@ -1,3 +1,5 @@
+// currently fetch lands are being handled as deck-thinners. their 'ProducibleManaColors' is currently comma-delimited names of basic land types it can fetch, this can be changed
+
 let TestDeck = [
   {
     name: 'IslandSwamp',
@@ -506,13 +508,13 @@ let MiniTestDeck = [
   },
   {
     name: 'test-fetch',
-    ProducibleManaColors: 'Mountain,Plains,',
+    ProducibleManaColors: 'F',
     types: '{Land}',
     type: 'Non-Basic Land ...',
   },
   {
     name: 'test-fetch',
-    ProducibleManaColors: 'Mountain,Plains,',
+    ProducibleManaColors: 'F',
     types: '{Land}',
     type: 'Non-Basic Land ...',
   },
@@ -547,7 +549,7 @@ let TargetCard = {
 };
 let TestFetch = {
   name: 'test-fetch',
-  ProducibleManaColors: 'Mountain,Plains,',
+  ProducibleManaColors: 'F',
   types: '{Land}',
   type: 'Non-Basic Land ...',
 };
@@ -597,8 +599,7 @@ function probabilityOfPlayingCard(
 
     // computing probability of each hand and adding to tally
     let P = 0;
-    let deckSize = deck.length - deck.filter(v=>(v.ProducibleManaColors)?(v.ProducibleManaColors.length>1 && v.ProducibleManaColors[1]!==','):false).length;
-    console.log(deckSize)
+    let deckSize = deck.length - deck.filter(v=>(v.ProducibleManaColors)?(v.ProducibleManaColors === 'F'):false).length;
     let memo = {};
     goodHands.forEach(hand => {
       P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
@@ -611,7 +612,7 @@ function probabilityOfPlayingCard(
 // *works well atm
 function parseHands(numCards, card, deck) {
   // card's cost
-  deck = deck.filter(v=>(v.ProducibleManaColors)?!(v.ProducibleManaColors.length>1 && v.ProducibleManaColors[1]!==','):true)
+  deck = deck.filter(v=>(v.ProducibleManaColors)?!(v.ProducibleManaColors === 'F'):true)
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => {
     return (a += cost[b]);
@@ -756,8 +757,6 @@ function parseHands(numCards, card, deck) {
     return a;
   }, []);
 
-  console.log(viable)
-
   return viable;
 }
 
@@ -867,7 +866,7 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
     memo[deckSize + ',' + draws] = nCk(deckSize, draws);
   }
   let denomenator = memo[deckSize + ',' + draws];
-  let combinations = '1';
+  let numerator = '1';
   for (var i = 0; i < cards.length; i++) {
     if (!memo[cards[i][1].toString() + ',' + cards[i][0].toString()]) {
       memo[cards[i][1].toString() + ',' + cards[i][0].toString()] = nCk(
@@ -875,49 +874,15 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
         cards[i][0]
       );
     }
-    combinations = multiplyString(
-      combinations,
+    numerator = multiplyString(
+      numerator,
       memo[cards[i][1].toString() + ',' + cards[i][0].toString()]
     );
   }
-  let numerator = parseInt(draws) <
-    cards.reduce((a, b) => a + parseInt(b[0]), 0)
-    ? '0'
-    : combinations;
   return divideString(numerator, denomenator, 8);
 }
 
 // arithmatic helper functions for large numbers
-
-// combinatorics
-// *not all of these ended up being necessary, should keep around a while just in case*
-function StirlingSecond(n, k) {
-  // // input check:
-  // console.log('Stirling: ',n,k)
-  if (greaterThan('1', n) || (n !== '0' && n === k)) return '1';
-  if (greaterThan(k, n) || greaterThan('1', k)) return '0';
-  if (n === '0' && k === '0') return '-1';
-  result = '0';
-  for (var j = 0; j <= k; j += 2) {
-    result = additionString(
-      result,
-      multiplyString(
-        nCk(k, j.toString()),
-        StringPower(subtractString(k, j.toString()), n)
-      )
-    );
-  }
-  for (var i = 1; i <= k; i += 2) {
-    result = subtractString(
-      result,
-      multiplyString(
-        nCk(k, i.toString()),
-        StringPower(subtractString(k, i.toString()), n)
-      )
-    );
-  }
-  return divideString(result, factorialString(k));
-}
 
 function nCk(n, k) {
   let result = '1'
@@ -928,16 +893,6 @@ function nCk(n, k) {
   }
   return result
 }
-
-// function nCk(n, k) {
-//   // // input check:
-//   // console.log('nCk',n,k)
-//   if (n === k || greaterThan('1', k)) return '1';
-//   return divideString(
-//     factorialString(n),
-//     multiplyString(factorialString(subtractString(n, k)), factorialString(k))
-//   );
-// }
 
 function factorialString(n) {
   // // input check:
