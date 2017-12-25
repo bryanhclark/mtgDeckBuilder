@@ -317,128 +317,6 @@ let TestDeck = [
   },
   { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
 ];
-let TestDeck2 = [
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'land',
-    ProducibleManaColors: 'U,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Card',
-    types: '{Other}',
-    type: 'Other',
-    manaCost: '{3}',
-  },
-  {
-    name: 'Card',
-    types: '{Other}',
-    type: 'Other',
-    manaCost: '{3}',
-  },
-  {
-    name: 'Card',
-    types: '{Other}',
-    type: 'Other',
-    manaCost: '{3}',
-  },
-  {
-    name: 'Card',
-    types: '{Other}',
-    type: 'Other',
-    manaCost: '{3}',
-  },
-  {
-    name: 'Card',
-    types: '{Other}',
-    type: 'Other',
-    manaCost: '{3}',
-  },
-];
 let MiniTestDeck = [
   {
     name: 'Card',
@@ -506,18 +384,30 @@ let MiniTestDeck = [
     types: '{Land}',
     type: 'Land — Mountain Swamp',
   },
-  {
-    name: 'test-fetch',
-    ProducibleManaColors: 'F',
-    types: '{Land}',
-    type: 'Non-Basic Land ...',
-  },
-  {
-    name: 'test-fetch',
-    ProducibleManaColors: 'F',
-    types: '{Land}',
-    type: 'Non-Basic Land ...',
-  },
+  // {
+  //   name: 'test-fetch',
+  //   ProducibleManaColors: 'F',
+  //   types: '{Land}',
+  //   type: 'Non-Basic Land ...',
+  // },
+  // {
+  //   name: 'test-fetch',
+  //   ProducibleManaColors: 'F',
+  //   types: '{Land}',
+  //   type: 'Non-Basic Land ...',
+  // },
+  // {
+  //   name: 'test-fetch',
+  //   ProducibleManaColors: 'F',
+  //   types: '{Land}',
+  //   type: 'Non-Basic Land ...',
+  // },
+  // {
+  //   name: 'test-fetch',
+  //   ProducibleManaColors: 'F',
+  //   types: '{Land}',
+  //   type: 'Non-Basic Land ...',
+  // },
 ];
 let MicroTestDeck = [
   { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{W}{U}{U}' },
@@ -547,12 +437,6 @@ let TargetCard = {
   type: 'Other',
   manaCost: '{B}{W}{R}',
 };
-let TestFetch = {
-  name: 'test-fetch',
-  ProducibleManaColors: 'F',
-  types: '{Land}',
-  type: 'Non-Basic Land ...',
-};
 
 // fuckJS
 Array.prototype.copy = function() {
@@ -564,10 +448,10 @@ Array.prototype.copy = function() {
 };
 
 console.time('prob');
-console.log('\n',probabilityOfPlayingCard(10, TargetCard, MiniTestDeck, 0));
+console.log('\n',probabilityOfPlayingCard(5, TargetCard, MiniTestDeck, 0));
 console.timeEnd('prob');
 console.time('stat');
-console.log('\n',simDeck(10, TargetCard, MiniTestDeck, 10000, 0));
+console.log('\n',simDeck(5, TargetCard, MiniTestDeck, 20, 0));
 console.timeEnd('stat');
 
 // computes statistic
@@ -757,6 +641,8 @@ function parseHands(numCards, card, deck) {
     return a;
   }, []);
 
+  console.log(viable)
+
   return viable;
 }
 
@@ -814,17 +700,18 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
     Object.keys(manaBase).reduce((a, b) => a + manaBase[b], 0) >=
     convertedManaCost;
   let colorCondition = Object.keys(cost).reduce((a, b) => {
-    if (cost[b] <= manaBase[b] || b === 'C') {
-      cost[b] = 0;
-      return a && true;
-    } else {
-      Object.keys(manaBase).forEach(v => {
-        if (v.split(',').includes(b)) cost[b] -= Math.min(manaBase[v], cost[b]);
-      });
-      return a && cost[b] === 0;
-    }
+    Object.keys(manaBase).forEach(v => {
+      if (v.split(',').includes(b)){
+        let min = Math.min(manaBase[v], cost[b])
+        cost[b] -= min
+        manaBase[v] -= min
+      }
+    })
+    return a && cost[b] <= 0;
   }, true);
   let includesCondition = deck.map(v => v.name).includes(card.name);
+
+  console.log(deck.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),colorCondition , manaCondition , turnCondition , includesCondition)
 
   return colorCondition && manaCondition && turnCondition && includesCondition;
 }
@@ -890,9 +777,12 @@ function nCk(n, k) {
   for(var i=n;i>Math.max(n-k,k);i--){
     result = multiplyString(result,i.toString())
     result = divideString(result,d.toString())
+    d++
   }
   return result
 }
+
+console.log(nCk(5,2))
 
 function factorialString(n) {
   // // input check:
