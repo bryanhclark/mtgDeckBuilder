@@ -711,7 +711,8 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
   }, true);
   let includesCondition = deck.map(v => v.name).includes(card.name);
 
-  console.log(deck.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),colorCondition , manaCondition , turnCondition , includesCondition)
+  // // console log that im tired of rewriting
+  // console.log(deck.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),colorCondition , manaCondition , turnCondition , includesCondition)
 
   return colorCondition && manaCondition && turnCondition && includesCondition;
 }
