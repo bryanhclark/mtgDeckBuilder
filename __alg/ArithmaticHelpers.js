@@ -442,67 +442,79 @@ let MiniTestDeck = [
     name: 'Card',
     types: '{Other}',
     type: 'Other',
-    manaCost: '{3}',
+    manaCost: '{B}{W}{R}',
   },
   {
     name: 'Card',
     types: '{Other}',
     type: 'Other',
-    manaCost: '{3}',
+    manaCost: '{B}{W}{R}',
   },
   {
     name: 'Card',
     types: '{Other}',
     type: 'Other',
-    manaCost: '{3}',
+    manaCost: '{B}{W}{R}',
   },
   {
     name: 'Island-Plains',
     ProducibleManaColors: 'U,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Island Plains',
   },
   {
     name: 'Island-Plains',
     ProducibleManaColors: 'U,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Island Plains',
   },
   {
     name: 'Island-Plains',
     ProducibleManaColors: 'U,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Island Plains',
   },
   {
     name: 'Island-Plains',
     ProducibleManaColors: 'U,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Island Plains',
   },
   {
     name: 'Island-Plains',
     ProducibleManaColors: 'U,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Island Plains',
   },
   {
     name: 'Swamp-Mountain',
     ProducibleManaColors: 'B,R',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Mountain Swamp',
   },
   {
     name: 'Swamp-Mountain',
     ProducibleManaColors: 'B,R',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Mountain Swamp',
   },
   {
     name: 'Swamp-Mountain',
     ProducibleManaColors: 'B,R',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Land — Mountain Swamp',
+  },
+  {
+    name: 'test-fetch',
+    ProducibleManaColors: 'Mountain,Plains,',
+    types: '{Land}',
+    type: 'Non-Basic Land ...',
+  },
+  {
+    name: 'test-fetch',
+    ProducibleManaColors: 'Mountain,Plains,',
+    types: '{Land}',
+    type: 'Non-Basic Land ...',
   },
 ];
 let MicroTestDeck = [
@@ -516,7 +528,7 @@ let MicroTestDeck = [
   },
   {
     name: 'Plains-Island',
-    ProducibleManaColors: 'U,W',
+    ProducibleManaColors: 'U',
     types: '{Land}',
     type: 'Basic Land - ...',
   },
@@ -531,7 +543,13 @@ let TargetCard = {
   name: 'Card',
   types: '{Other}',
   type: 'Other',
-  manaCost: '{W}{B}',
+  manaCost: '{B}{W}{R}',
+};
+let TestFetch = {
+  name: 'test-fetch',
+  ProducibleManaColors: 'Mountain,Plains,',
+  types: '{Land}',
+  type: 'Non-Basic Land ...',
 };
 
 // fuckJS
@@ -544,10 +562,10 @@ Array.prototype.copy = function() {
 };
 
 console.time('prob');
-console.log(probabilityOfPlayingCard(9, TargetCard, TestDeck));
+console.log('\n',probabilityOfPlayingCard(10, TargetCard, MiniTestDeck, 0));
 console.timeEnd('prob');
 console.time('stat');
-console.log(simDeck(9, TargetCard, TestDeck, 10000));
+console.log('\n',simDeck(10, TargetCard, MiniTestDeck, 10000, 0));
 console.timeEnd('stat');
 
 // computes statistic
@@ -579,7 +597,8 @@ function probabilityOfPlayingCard(
 
     // computing probability of each hand and adding to tally
     let P = 0;
-    let deckSize = deck.length;
+    let deckSize = deck.length - deck.filter(v=>(v.ProducibleManaColors)?(v.ProducibleManaColors.length>1 && v.ProducibleManaColors[1]!==','):false).length;
+    console.log(deckSize)
     let memo = {};
     goodHands.forEach(hand => {
       P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
@@ -592,7 +611,7 @@ function probabilityOfPlayingCard(
 // *works well atm
 function parseHands(numCards, card, deck) {
   // card's cost
-
+  deck = deck.filter(v=>(v.ProducibleManaColors)?!(v.ProducibleManaColors.length>1 && v.ProducibleManaColors[1]!==','):true)
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => {
     return (a += cost[b]);
@@ -602,7 +621,6 @@ function parseHands(numCards, card, deck) {
   // deck bins: target, lands, other
   let deckBins = deck.reduce(
     (a, b) => {
-      // reducer for independent probability
       if (b.types.slice(1, 5) === 'Land') {
         a.L++;
       } else if (b.name === card.name) {
@@ -638,13 +656,7 @@ function parseHands(numCards, card, deck) {
   }
 
   // landBins: each variety of different mana-producers
-  let landBins = deck.reduce((a, b) => {
-    if (b.ProducibleManaColors) {
-      if (a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++;
-      else a[b.ProducibleManaColors] = 1;
-    }
-    return a;
-  }, {});
+  let landBins = JSONmanaBase(deck);
 
   // multichoosing for necessary colored mana
   let necessaryManaOptions = Object.keys(cost).reduce(
@@ -744,7 +756,21 @@ function parseHands(numCards, card, deck) {
     return a;
   }, []);
 
+  console.log(viable)
+
   return viable;
+}
+
+// creates JSON manaBase
+
+function JSONmanaBase(deck) {
+  return deck.reduce((a, b) => {
+    if (b.ProducibleManaColors) {
+      if (a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++;
+      else a[b.ProducibleManaColors] = 1;
+    }
+    return a;
+  }, {});
 }
 
 // arrayifies manaCost
@@ -783,14 +809,7 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
   deck = deck.copy();
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => a + cost[b], 0);
-  let manaBase = deck.reduce((a, b) => {
-    if (b.ProducibleManaColors) {
-      if (a[b.ProducibleManaColors])
-        a[b.ProducibleManaColors] = a[b.ProducibleManaColors] + 1;
-      else a[b.ProducibleManaColors] = 1;
-    }
-    return a;
-  }, {});
+  let manaBase = JSONmanaBase(deck);
   let turnCondition = draws - startingHandSize >= convertedManaCost;
   let manaCondition =
     Object.keys(manaBase).reduce((a, b) => a + manaBase[b], 0) >=
@@ -852,8 +871,8 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
   for (var i = 0; i < cards.length; i++) {
     if (!memo[cards[i][1].toString() + ',' + cards[i][0].toString()]) {
       memo[cards[i][1].toString() + ',' + cards[i][0].toString()] = nCk(
-        cards[i][1].toString(),
-        cards[i][0].toString()
+        cards[i][1],
+        cards[i][0]
       );
     }
     combinations = multiplyString(
@@ -901,14 +920,24 @@ function StirlingSecond(n, k) {
 }
 
 function nCk(n, k) {
-  // // input check:
-  // console.log('nCk',n,k)
-  if (n === k || greaterThan('1', k)) return '1';
-  return divideString(
-    factorialString(n),
-    multiplyString(factorialString(subtractString(n, k)), factorialString(k))
-  );
+  let result = '1'
+  let d = 1
+  for(var i=n;i>Math.max(n-k,k);i--){
+    result = multiplyString(result,i.toString())
+    result = divideString(result,d.toString())
+  }
+  return result
 }
+
+// function nCk(n, k) {
+//   // // input check:
+//   // console.log('nCk',n,k)
+//   if (n === k || greaterThan('1', k)) return '1';
+//   return divideString(
+//     factorialString(n),
+//     multiplyString(factorialString(subtractString(n, k)), factorialString(k))
+//   );
+// }
 
 function factorialString(n) {
   // // input check:
