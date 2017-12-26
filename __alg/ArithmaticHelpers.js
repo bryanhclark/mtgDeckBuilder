@@ -319,111 +319,7 @@ let TestDeck = [
   },
   { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
 ];
-let TestDeck2 = [{
-    name: 'IslandSwamp',
-    ProducibleManaColors: 'U,B',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'IslandSwamp',
-    ProducibleManaColors: 'U,B',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'IslandSwamp',
-    ProducibleManaColors: 'U,B',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Island',
-    ProducibleManaColors: 'U',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Island',
-    ProducibleManaColors: 'U',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Island',
-    ProducibleManaColors: 'U',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Island',
-    ProducibleManaColors: 'U',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
-  {
-    name: 'Forest',
-    ProducibleManaColors: 'G',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Forest',
-    ProducibleManaColors: 'G',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Forest',
-    ProducibleManaColors: 'G',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Forest',
-    ProducibleManaColors: 'G',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'ForestPlains',
-    ProducibleManaColors: 'G,W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
-  {
-    name: 'Plains',
-    ProducibleManaColors: 'W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Plains',
-    ProducibleManaColors: 'W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Plains',
-    ProducibleManaColors: 'W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Plains',
-    ProducibleManaColors: 'W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  {
-    name: 'Plains',
-    ProducibleManaColors: 'W',
-    types: '{Land}',
-    type: 'Basic Land - ...',
-  },
-  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+let TestDeck2 = [
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
@@ -635,11 +531,110 @@ let TestDeck2 = [{
   },
   { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
   {
-    name: 'FETCHING',
-    ProducibleManaColors: 'G,W,U',
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
     types: '{Land}',
     type: 'Basic Land - ...',
   },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'ForestPlains',
+    ProducibleManaColors: 'G,W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
   {
     name: 'FETCHING',
     ProducibleManaColors: 'G,W,U',
@@ -658,7 +653,13 @@ let TestDeck2 = [{
     types: '{Land}',
     type: 'Basic Land - ...',
   },
-]
+  {
+    name: 'FETCHING',
+    ProducibleManaColors: 'G,W,U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+];
 let MiniTestDeck = [
   {
     name: 'Card',
@@ -790,10 +791,10 @@ Array.prototype.copy = function() {
 };
 
 console.time('prob');
-console.log('\n',probabilityOfPlayingCard(5, TargetCard, TestDeck, 0));
+console.log('\n', probabilityOfPlayingCard(15, TargetCard, TestDeck, 0));
 console.timeEnd('prob');
 console.time('stat');
-console.log('\n',simDeck(5, TargetCard, TestDeck, 2000000, 0));
+console.log('\n', simDeck(15, TargetCard, TestDeck, 1000000, 0));
 console.timeEnd('stat');
 
 // computes statistic
@@ -825,7 +826,11 @@ function probabilityOfPlayingCard(
 
     // computing probability of each hand and adding to tally
     let P = 0;
-    let deckSize = deck.length - deck.filter(v=>(v.ProducibleManaColors)?(v.ProducibleManaColors === 'F'):false).length;
+    let deckSize =
+      deck.length -
+      deck.filter(
+        v => (v.ProducibleManaColors ? v.ProducibleManaColors === 'F' : false)
+      ).length;
     let memo = {};
     goodHands.forEach(hand => {
       P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
@@ -838,7 +843,9 @@ function probabilityOfPlayingCard(
 // *works well atm
 function parseHands(numCards, card, deck) {
   // card's cost
-  deck = deck.filter(v=>(v.ProducibleManaColors)?!(v.ProducibleManaColors === 'F'):true)
+  deck = deck.filter(
+    v => (v.ProducibleManaColors ? !(v.ProducibleManaColors === 'F') : true)
+  );
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => {
     return (a += cost[b]);
@@ -1028,7 +1035,7 @@ function shuffle(a) {
   }
 }
 
-// boolean of if deck can play card
+// boolean of if deck (or hand) can play card
 // *works well atm
 function cardPlayable(draws, card, deck, startingHandSize = 7) {
   deck = deck.copy();
@@ -1041,12 +1048,12 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
     convertedManaCost;
   let colorCondition = Object.keys(cost).reduce((a, b) => {
     Object.keys(manaBase).forEach(v => {
-      if (v.split(',').includes(b)){
-        let min = Math.min(manaBase[v], cost[b])
-        cost[b] -= min
-        manaBase[v] -= min
+      if (v.split(',').includes(b)) {
+        let min = Math.min(manaBase[v], cost[b]);
+        cost[b] -= min;
+        manaBase[v] -= min;
       }
-    })
+    });
     return a && cost[b] <= 0;
   }, true);
   let includesCondition = deck.map(v => v.name).includes(card.name);
@@ -1115,14 +1122,14 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
 // arithmatic helper functions for large numbers
 
 function nCk(n, k) {
-  let result = '1'
-  let d = 1
-  for(var i=n;i>Math.max(n-k,k);i--){
-    result = multiplyString(result,i.toString())
-    result = divideString(result,d.toString())
-    d++
+  let result = '1';
+  let d = 1;
+  for (var i = n; i > Math.max(n - k, k); i--) {
+    result = multiplyString(result, i.toString());
+    result = divideString(result, d.toString());
+    d++;
   }
-  return result
+  return result;
 }
 
 function factorialString(n) {
