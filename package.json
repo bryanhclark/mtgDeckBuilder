@@ -24,7 +24,6 @@
     "loader": "^2.1.1",
     "material-ui": "^0.20.0",
     "morgan": "^1.9.0",
-    "multichoose": "^1.0.3",
     "nodemon": "^1.12.1",
     "pg": "^6.4.2",
     "postcss-loader": "^0.8.0",
