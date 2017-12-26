@@ -1,5 +1,7 @@
 // currently fetch lands are being handled as deck-thinners. their 'ProducibleManaColors' is denoted is an 'F'
 
+// for code related to alg skip to line 800 or so
+
 let TestDeck = [
   {
     name: 'IslandSwamp',
@@ -317,6 +319,346 @@ let TestDeck = [
   },
   { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
 ];
+let TestDeck2 = [{
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'ForestPlains',
+    ProducibleManaColors: 'G,W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'ForestPlains',
+    ProducibleManaColors: 'G,W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'IslandSwamp',
+    ProducibleManaColors: 'U,B',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Island',
+    ProducibleManaColors: 'U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Forest',
+    ProducibleManaColors: 'G',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'ForestPlains',
+    ProducibleManaColors: 'G,W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'Plains',
+    ProducibleManaColors: 'W',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
+  {
+    name: 'FETCHING',
+    ProducibleManaColors: 'G,W,U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'FETCHING',
+    ProducibleManaColors: 'G,W,U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'FETCHING',
+    ProducibleManaColors: 'G,W,U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+  {
+    name: 'FETCHING',
+    ProducibleManaColors: 'G,W,U',
+    types: '{Land}',
+    type: 'Basic Land - ...',
+  },
+]
 let MiniTestDeck = [
   {
     name: 'Card',
@@ -435,7 +777,7 @@ let TargetCard = {
   name: 'Card',
   types: '{Other}',
   type: 'Other',
-  manaCost: '{B}{W}{R}',
+  manaCost: '{G}{W}{U}',
 };
 
 // fuckJS
@@ -448,10 +790,10 @@ Array.prototype.copy = function() {
 };
 
 console.time('prob');
-console.log('\n',probabilityOfPlayingCard(5, TargetCard, MiniTestDeck, 0));
+console.log('\n',probabilityOfPlayingCard(5, TargetCard, TestDeck, 0));
 console.timeEnd('prob');
 console.time('stat');
-console.log('\n',simDeck(5, TargetCard, MiniTestDeck, 20, 0));
+console.log('\n',simDeck(5, TargetCard, TestDeck, 2000000, 0));
 console.timeEnd('stat');
 
 // computes statistic
@@ -641,8 +983,6 @@ function parseHands(numCards, card, deck) {
     return a;
   }, []);
 
-  console.log(viable)
-
   return viable;
 }
 
@@ -717,6 +1057,8 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
   return colorCondition && manaCondition && turnCondition && includesCondition;
 }
 
+// mutator function that places 'numBalls' balls into 'bins' with repitition and without exceeding the capacity of the bins
+
 function multichoose(numBalls, bins, combinations, com = bins.copy()) {
   // if out of balls, then push to combinations
   if (numBalls === 0) {
@@ -783,8 +1125,6 @@ function nCk(n, k) {
   return result
 }
 
-console.log(nCk(5,2))
-
 function factorialString(n) {
   // // input check:
   // console.log('fact',n)
@@ -835,6 +1175,7 @@ function multiplyString(a, b) {
   return stack.reverse().join('').replace(/^(0(?!$))+/, '');
 }
 
+// third parameter is number of decimal places
 function divideString(a, b, d) {
   // // input check:
   // console.log('div',a,b)
