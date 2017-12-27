@@ -324,19 +324,19 @@ let TestDeck2 = [
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'Island',
@@ -391,7 +391,7 @@ let TestDeck2 = [
     name: 'ForestPlains',
     ProducibleManaColors: 'G,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Forest Plains',
   },
   { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
   {
@@ -429,19 +429,19 @@ let TestDeck2 = [
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'Island',
@@ -496,7 +496,7 @@ let TestDeck2 = [
     name: 'ForestPlains',
     ProducibleManaColors: 'G,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Forest Plains',
   },
   { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
   {
@@ -534,19 +534,19 @@ let TestDeck2 = [
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'IslandSwamp',
     ProducibleManaColors: 'U,B',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Island Swamp',
   },
   {
     name: 'Island',
@@ -601,7 +601,7 @@ let TestDeck2 = [
     name: 'ForestPlains',
     ProducibleManaColors: 'G,W',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Basic Land - Forest Plains',
   },
   { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{2}' },
   {
@@ -636,28 +636,32 @@ let TestDeck2 = [
   },
   { name: 'NotCard', types: '{Other}', type: 'Other', manaCost: '{1}{R}{R}' },
   {
-    name: 'FETCHING',
-    ProducibleManaColors: 'G,W,U',
+    name: 'test-fetch',
+    ProducibleManaColors: 'F',
+    fetchOptions: 'Plains,Island',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Non-Basic Land ...',
   },
   {
-    name: 'FETCHING',
-    ProducibleManaColors: 'G,W,U',
+    name: 'test-fetch',
+    ProducibleManaColors: 'F',
+    fetchOptions: 'Plains,Island',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Non-Basic Land ...',
   },
   {
-    name: 'FETCHING',
-    ProducibleManaColors: 'G,W,U',
+    name: 'test-fetch',
+    ProducibleManaColors: 'F',
+    fetchOptions: 'Plains,Island',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Non-Basic Land ...',
   },
   {
-    name: 'FETCHING',
-    ProducibleManaColors: 'G,W,U',
+    name: 'test-fetch',
+    ProducibleManaColors: 'F',
+    fetchOptions: 'Plains,Island',
     types: '{Land}',
-    type: 'Basic Land - ...',
+    type: 'Non-Basic Land ...',
   },
 ];
 let MiniTestDeck = [
@@ -726,31 +730,7 @@ let MiniTestDeck = [
     ProducibleManaColors: 'B,R',
     types: '{Land}',
     type: 'Land — Mountain Swamp',
-  },
-  // {
-  //   name: 'test-fetch',
-  //   ProducibleManaColors: 'F',
-  //   types: '{Land}',
-  //   type: 'Non-Basic Land ...',
-  // },
-  // {
-  //   name: 'test-fetch',
-  //   ProducibleManaColors: 'F',
-  //   types: '{Land}',
-  //   type: 'Non-Basic Land ...',
-  // },
-  // {
-  //   name: 'test-fetch',
-  //   ProducibleManaColors: 'F',
-  //   types: '{Land}',
-  //   type: 'Non-Basic Land ...',
-  // },
-  // {
-  //   name: 'test-fetch',
-  //   ProducibleManaColors: 'F',
-  //   types: '{Land}',
-  //   type: 'Non-Basic Land ...',
-  // },
+  }
 ];
 let MicroTestDeck = [
   { name: 'Card', types: '{Other}', type: 'Other', manaCost: '{W}{U}{U}' },
@@ -790,11 +770,26 @@ Array.prototype.copy = function() {
   }, []);
 };
 
+// fuckJS again
+function copy(data) {
+  if (Array.isArray(data)) {
+    return data.slice(0).reduce((a, b) => {
+      a.push(copy(b));
+      return a;
+    }, []);
+  } else if (typeof data === 'object') {
+    return Object.keys(data).reduce((a, b) => {
+      a[b] = copy(data[b]);
+      return a;
+    }, {});
+  } else return data;
+}
+
 console.time('prob');
-console.log('\n', probabilityOfPlayingCard(15, TargetCard, TestDeck, 0));
+console.log('\n', probabilityOfPlayingCard(10, TargetCard, TestDeck2, 0));
 console.timeEnd('prob');
 console.time('stat');
-console.log('\n', simDeck(15, TargetCard, TestDeck, 1000000, 0));
+console.log('\n', simDeck(10, TargetCard, TestDeck2, 1000000, 0));
 console.timeEnd('stat');
 
 // computes statistic
@@ -802,9 +797,17 @@ console.timeEnd('stat');
 function simDeck(cardsDrawn, card, deck, trials, startingHandSize = 7) {
   let sum = 0;
   let hand;
+  let cost = cardCost(card)
   for (var i = trials; i > 0; i--) {
     shuffle(deck);
     hand = deck.slice(0, cardsDrawn);
+    hand = hand.reduce((a,b)=>{
+      if(b.ProducibleManaColors==='F'){
+        a.push(landToFetch(cost,deck.slice(cardsDrawn),b.fetchOptions))
+        a.splice(a.indexOf(b),1)
+      }
+      return a
+    },hand)
     sum = cardPlayable(cardsDrawn, card, hand, startingHandSize)
       ? (sum += 1)
       : sum;
@@ -826,11 +829,7 @@ function probabilityOfPlayingCard(
 
     // computing probability of each hand and adding to tally
     let P = 0;
-    let deckSize =
-      deck.length -
-      deck.filter(
-        v => (v.ProducibleManaColors ? v.ProducibleManaColors === 'F' : false)
-      ).length;
+    let deckSize = deck.length
     let memo = {};
     goodHands.forEach(hand => {
       P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
@@ -843,19 +842,35 @@ function probabilityOfPlayingCard(
 // *works well atm
 function parseHands(numCards, card, deck) {
   // card's cost
-  deck = deck.filter(
-    v => (v.ProducibleManaColors ? !(v.ProducibleManaColors === 'F') : true)
-  );
+
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => {
     return (a += cost[b]);
   }, 0);
   let colorCost = convertedManaCost - (cost.C || 0);
 
+  // * place for possible adjustments
+  // fetch-land adjustment
+  let costCopy = copy(cost)
+  deck = deck.reduce((a,b)=>{
+    if(b.ProducibleManaColors === 'F'){
+      let f = landToFetch(costCopy,a,b.fetchOptions)
+      a.push(landToFetch(costCopy,a,b.fetchOptions))
+
+      // adjusts cost to weight unfetched lands more heavily
+      Object.keys(costCopy).forEach(v=>{
+        if(!f.ProducibleManaColors.split(',').includes(v)) costCopy[v]++
+      })
+    }
+    return a
+  },deck.copy()).filter(
+    v => (v.ProducibleManaColors ? !(v.ProducibleManaColors === 'F') : true)
+  );
+
   // deck bins: target, lands, other
   let deckBins = deck.reduce(
     (a, b) => {
-      if (b.types.slice(1, 5) === 'Land') {
+      if (b.types.indexOf('Land')>-1) {
         a.L++;
       } else if (b.name === card.name) {
         a.T++;
@@ -1033,6 +1048,31 @@ function shuffle(a) {
     a[i] = a[j];
     a[j] = x;
   }
+}
+
+// best guess at land to fetch, returns a new card object
+// * place for possible adjustments
+// ** this is an optimization problem, expert discretion important here**
+function landToFetch(manaCost, deck, fetchOptions) {
+  return deck
+    .filter(
+      v =>{
+        return v.type.split(' ').includes(fetchOptions.split(',')[0]) ||
+        v.type.split(' ').includes(fetchOptions.split(',')[1])
+    })
+    .reduce(
+      (a, b) => {
+        let score = 0;
+        Object.keys(manaCost).forEach(v => {
+          if (b.ProducibleManaColors.split(',').includes(v)) {
+            score += manaCost[v] + b.ProducibleManaColors.length;
+          }
+        });
+        if (score > a[0]) a = [score, copy(b)];
+        return a
+      },
+      [0, null]
+    )[1];
 }
 
 // boolean of if deck (or hand) can play card
