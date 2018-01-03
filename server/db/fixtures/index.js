@@ -58,14 +58,14 @@ const cardsWithMultiverseId = allCards.filter(card => {
 
 
 // seed file for mtg db
-// Card.sync({
-//         force: true
-//     })
-//     .then(() => {
-//         Card.bulkCreate(cardsWithMultiverseId);
+Card.sync({
+        force: true
+    })
+    .then(() => {
+        Card.bulkCreate(cardsWithMultiverseId);
 
-//     })
-//     .then(() => {
-//         console.log('success');
-//     })
-//     .catch();
+    })
+    .then(() => {
+        console.log('success');
+    })
+    .catch();
