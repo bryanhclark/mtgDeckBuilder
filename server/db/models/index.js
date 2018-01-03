@@ -60,13 +60,23 @@ const Card = db.define('cards', {
     types: {
         type: Sequelize.ARRAY(Sequelize.TEXT),
         allowNull: true
+    },
+    uniqueName: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        get() {
+            const name = this.getDataValue('name');
+            const set = this.getDataValue('set');
+            const multiverseid = this.getDataValue('multiverseid');
+            return name + ' (' + set + ') #' + multiverseid
+        },
     }
 })
 
-Card.prototype.ProducibleManaColors = function(){
-    return (this.type.indexOf('Land') === -1)
-        ? false
-        : this.text.split('\n').reduce((a, b) => {
+Card.prototype.ProducibleManaColors = function () {
+    return (this.type.indexOf('Land') === -1) ?
+        false :
+        this.text.split('\n').reduce((a, b) => {
             if (b.indexOf('{T}') < b.indexOf('Add')) {
                 if (b.indexOf('{B}') > 0 && a.indexOf('B') < 0) a += 'B'
                 if (b.indexOf('{G}') > 0 && a.indexOf('G') < 0) a += 'G'

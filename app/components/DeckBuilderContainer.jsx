@@ -12,35 +12,34 @@ class DeckBuilderContainer extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            cards: [],
-            names: [],
+            selectedCard: ''
         }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
-        this.getCardNames = this.getCardNames.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSelect = this.handleSelect.bind(this)
     }
 
-    componentWillReceiveProps() {
-        this.getCardNames(this.props.filteredCards)
-    }
     handleUpdateInput = (value) => {
-        console.log(value);
-        if (value) {
-            this.props.loadFilteredCards(value);
-            this.setState({ cards: this.props.filteredCards });
+        if (value.length && value.indexOf('#') === -1) {
+            console.log(value)
+            this.props.loadFilteredCards(value)
         }
+        // console.log('stop shitting yourself')
+        // console.log(this.props.filteredCards[0])
+        // console.log('here here' + (this.props.filteredCards.length) ? this.props.filteredCards[0].uniqueName() : 'empty')
     };
 
-    getCardNames = (cards) => {
-        let names = cards.map(card => {
-            return card.name
-        })
-        this.setState({ names: names, cards: cards })
-    }
     handleSubmit = (event) => {
         event.preventDefault()
-        this.props.addNewCard(this.props.filteredCards[0]);
+        console.log('this.props.filteredCards', this.props.filteredCards)
+        this.props.addNewCard(this.props.filteredCards.filter(v => v.multiverseid === this.state.selectedCard)[0]);
 
+    }
+    handleSelect = (event) => {
+        event.preventDefault()
+        console.log(event.target.value.slice(event.target.value.indexOf('#') + 1))
+        this.setState({ selectedCard: event.target.value.slice(event.target.value.indexOf('#') + 1) })
+        // console.log(this.setState.cards[0].UniqueName)
     }
 
 
@@ -53,8 +52,9 @@ class DeckBuilderContainer extends Component {
                     <form method='POST' onSubmit={this.handleSubmit}>
                         <AutoComplete
                             hintText="Type anything"
-                            dataSource={this.state.names}
+                            dataSource={this.props.filteredCards.map(v => v.name + ' (' + v.set + ') #' + v.multiverseid)}
                             onUpdateInput={this.handleUpdateInput}
+                            onSelect={this.handleSelect}
                         />
                         <FlatButton label="Submit" primary={true} type='submit' />
                     </form>
@@ -83,7 +83,6 @@ function mapDispatchToProps(dispatch) {
             dispatch(fetchFilteredCards(value))
         },
         addNewCard: (card) => {
-            console.log(card);
             dispatch(addCardToDeck(card));
         }
     }

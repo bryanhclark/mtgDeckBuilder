@@ -5746,8 +5746,10 @@ var getFilteredCards = exports.getFilteredCards = function getFilteredCards(filt
 // }
 
 var fetchFilteredCards = exports.fetchFilteredCards = function fetchFilteredCards(value) {
+    //console.log('entering thunk', value)
     return function thunk(dispatch) {
         _axios2.default.get('api/cards/filteredcards/' + value).then(function (res) {
+            //console.log('leaving thunk', res.data)
             dispatch(getFilteredCards(res.data));
         }).catch(console.error);
     };
@@ -34569,41 +34571,40 @@ var DeckBuilderContainer = function (_Component) {
         var _this = _possibleConstructorReturn(this, (DeckBuilderContainer.__proto__ || Object.getPrototypeOf(DeckBuilderContainer)).call(this, props));
 
         _this.handleUpdateInput = function (value) {
-            console.log(value);
-            if (value) {
+            if (value.length && value.indexOf('#') === -1) {
+                console.log(value);
                 _this.props.loadFilteredCards(value);
-                _this.setState({ cards: _this.props.filteredCards });
             }
-        };
-
-        _this.getCardNames = function (cards) {
-            var names = cards.map(function (card) {
-                return card.name;
-            });
-            _this.setState({ names: names, cards: cards });
+            // console.log('stop shitting yourself')
+            // console.log(this.props.filteredCards[0])
+            // console.log('here here' + (this.props.filteredCards.length) ? this.props.filteredCards[0].uniqueName() : 'empty')
         };
 
         _this.handleSubmit = function (event) {
             event.preventDefault();
-            _this.props.addNewCard(_this.props.filteredCards[0]);
+            console.log('this.props.filteredCards', _this.props.filteredCards);
+            _this.props.addNewCard(_this.props.filteredCards.filter(function (v) {
+                return v.multiverseid === _this.state.selectedCard;
+            })[0]);
+        };
+
+        _this.handleSelect = function (event) {
+            event.preventDefault();
+            console.log(event.target.value.slice(event.target.value.indexOf('#') + 1));
+            _this.setState({ selectedCard: event.target.value.slice(event.target.value.indexOf('#') + 1) });
+            // console.log(this.setState.cards[0].UniqueName)
         };
 
         _this.state = {
-            cards: [],
-            names: []
+            selectedCard: ''
         };
         _this.handleUpdateInput = _this.handleUpdateInput.bind(_this);
-        _this.getCardNames = _this.getCardNames.bind(_this);
         _this.handleSubmit = _this.handleSubmit.bind(_this);
+        _this.handleSelect = _this.handleSelect.bind(_this);
         return _this;
     }
 
     _createClass(DeckBuilderContainer, [{
-        key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps() {
-            this.getCardNames(this.props.filteredCards);
-        }
-    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -34622,8 +34623,11 @@ var DeckBuilderContainer = function (_Component) {
                         { method: 'POST', onSubmit: this.handleSubmit },
                         _react2.default.createElement(_AutoComplete2.default, {
                             hintText: 'Type anything',
-                            dataSource: this.state.names,
-                            onUpdateInput: this.handleUpdateInput
+                            dataSource: this.props.filteredCards.map(function (v) {
+                                return v.name + ' (' + v.set + ') #' + v.multiverseid;
+                            }),
+                            onUpdateInput: this.handleUpdateInput,
+                            onSelect: this.handleSelect
                         }),
                         _react2.default.createElement(_FlatButton2.default, { label: 'Submit', primary: true, type: 'submit' })
                     )
@@ -34656,7 +34660,6 @@ function mapDispatchToProps(dispatch) {
             dispatch((0, _cards.fetchFilteredCards)(value));
         },
         addNewCard: function addNewCard(card) {
-            console.log(card);
             dispatch((0, _Deck.addCardToDeck)(card));
         }
     };

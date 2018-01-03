@@ -37,9 +37,11 @@ export const getFilteredCards = (filteredCards) => {
 // }
 
 export const fetchFilteredCards = (value) => {
+    //console.log('entering thunk', value)
     return function thunk(dispatch) {
         axios.get('api/cards/filteredcards/' + value)
             .then(res => {
+                //console.log('leaving thunk', res.data)
                 dispatch(getFilteredCards(res.data))
             })
             .catch(console.error)
