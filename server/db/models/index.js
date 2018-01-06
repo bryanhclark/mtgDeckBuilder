@@ -4,7 +4,6 @@ const db = new Sequelize('postgres://localhost:5432/mtg', {
 });
 
 const Card = db.define('cards', {
-
     name: {
         type: Sequelize.STRING,
         allowNull: true
@@ -63,36 +62,17 @@ const Card = db.define('cards', {
     },
     uniqueName: {
         type: Sequelize.STRING,
-        allowNull: true,
-        get() {
-            const name = this.getDataValue('name');
-            const set = this.getDataValue('set');
-            const multiverseid = this.getDataValue('multiverseid');
-            return name + ' (' + set + ') #' + multiverseid
-        },
+        allowNull: false
+    },
+    ProducibleManaColors: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    fetchOptions: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
 })
-
-Card.prototype.ProducibleManaColors = function () {
-    return (this.type.indexOf('Land') === -1) ?
-        false :
-        this.text.split('\n').reduce((a, b) => {
-            if (b.indexOf('{T}') < b.indexOf('Add')) {
-                if (b.indexOf('{B}') > 0 && a.indexOf('B') < 0) a += 'B'
-                if (b.indexOf('{G}') > 0 && a.indexOf('G') < 0) a += 'G'
-                if (b.indexOf('{W}') > 0 && a.indexOf('W') < 0) a += 'W'
-                if (b.indexOf('{R}') > 0 && a.indexOf('R') < 0) a += 'R'
-                if (b.indexOf('{U}') > 0 && a.indexOf('U') < 0) a += 'U'
-                if (b.indexOf('{C}') > 0 && a.indexOf('C') < 0) a += 'C'
-                if (b.indexOf('any color') > 0 && a.indexOf('B') < 0) a += 'WRGBU'
-            }
-            if (b.indexOf(`Sacrifice ${this.name}: Search`) > -1) {
-                a += 'F'
-            }
-            return a
-        }, '').split('').sort().join(',')
-}
-
 
 const Deck = db.define('deck', {
     name: {
@@ -117,5 +97,6 @@ decks_cards.belongsTo(Deck);
 
 module.exports = {
     db: db,
-    Card: Card
+    Card: Card,
+    Sequelize: Sequelize
 }

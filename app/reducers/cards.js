@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getSelectedCard } from './selectedCard'
 
 
 //action typec
@@ -24,7 +25,6 @@ export const getFilteredCards = (filteredCards) => {
     }
 }
 
-
 // export const fetchCards = () => {
 //     return function thunk(dispatch) {
 //         axios.get('/api/cards/allcards')
@@ -37,12 +37,15 @@ export const getFilteredCards = (filteredCards) => {
 // }
 
 export const fetchFilteredCards = (value) => {
-    //console.log('entering thunk', value)
     return function thunk(dispatch) {
         axios.get('api/cards/filteredcards/' + value)
             .then(res => {
-                //console.log('leaving thunk', res.data)
-                dispatch(getFilteredCards(res.data))
+                let cards = res.data
+                dispatch(getFilteredCards(cards))
+                return cards
+            })
+            .then(cards => {
+                dispatch(getSelectedCard(value,cards))
             })
             .catch(console.error)
     }

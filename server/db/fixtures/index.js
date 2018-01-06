@@ -50,11 +50,43 @@ cardSets.forEach(function (cardSet) {
     })
 })
 
-const cardsWithMultiverseId = allCards.filter(card => {
+const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
     if (card.multiverseid) {
-        return card
+
+        let ProducibleManaColors = (card.text)?(card.type.indexOf('Land') === -1) ?
+            false :
+            card.text.split('\n').reduce((a, b) => {
+                if (b.indexOf('{T}') < b.indexOf('Add')) {
+                    if (b.indexOf('{B}') > 0 && a.indexOf('B') < 0) a += 'B'
+                    if (b.indexOf('{G}') > 0 && a.indexOf('G') < 0) a += 'G'
+                    if (b.indexOf('{W}') > 0 && a.indexOf('W') < 0) a += 'W'
+                    if (b.indexOf('{R}') > 0 && a.indexOf('R') < 0) a += 'R'
+                    if (b.indexOf('{U}') > 0 && a.indexOf('U') < 0) a += 'U'
+                    if (b.indexOf('{C}') > 0 && a.indexOf('C') < 0) a += 'C'
+                    if (b.indexOf('any color') > 0 && a.indexOf('B') < 0) a += 'WRGBU'
+                }
+                if (b.indexOf(`Sacrifice ${card.name}: Search`) > -1) {
+                    a += 'F'
+                }
+                return a
+            }, '').split('').sort().join(',') || false : false
+
+        let fetchOptions = (ProducibleManaColors === 'F') ? card.text.split('\n').reduce((a, b) => {
+            if (b.indexOf(`Sacrifice ${card.name}: Search`) > -1) {
+                if (b.indexOf('basic') > 0 && a.indexOf('C') < 0) a += 'Basic,'
+                if (b.indexOf('Mountain') > 0 && a.indexOf('C') < 0) a += 'Mountain,'
+                if (b.indexOf('Forest') > 0 && a.indexOf('C') < 0) a += 'Forest,'
+                if (b.indexOf('Island') > 0 && a.indexOf('C') < 0) a += 'Island,'
+                if (b.indexOf('Swamp') > 0 && a.indexOf('C') < 0) a += 'Swamp,'
+                if (b.indexOf('Plains') > 0 && a.indexOf('C') < 0) a += 'Plains,'
+            }
+            return a
+        },'').slice(0,-1) : false
+
+        cards.push(Object.assign({}, card, { fetchOptions , ProducibleManaColors , uniqueName: (card.name + ' (' + card.set + ') #' + card.multiverseid)}))
     };
-})
+    return cards
+},[])
 
 
 // seed file for mtg db

@@ -11,35 +11,48 @@ import DeckList from './DeckList';
 class DeckBuilderContainer extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            selectedCard: ''
-        }
+        // this.state = {
+        //     selectedCard: '',
+        //     input:''
+        // }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSelect = this.handleSelect.bind(this)
     }
 
     handleUpdateInput = (value) => {
-        if (value.length && value.indexOf('#') === -1) {
-            console.log(value)
+
+        this.setState({input:value})
+        if (value.length) {
             this.props.loadFilteredCards(value)
         }
-        // console.log('stop shitting yourself')
-        // console.log(this.props.filteredCards[0])
-        // console.log('here here' + (this.props.filteredCards.length) ? this.props.filteredCards[0].uniqueName() : 'empty')
+
+        // if (this.props.filteredCards.map(v=>v.uniqueName).includes(value)){
+        //     this.setState({selectedCard: value})
+        // }
+        // else if (this.props.filteredCards.length && this.props.filteredCards[0].uniqueName.indexOf(this.state.input) > -1){
+        //     this.setState({selectedCard: this.props.filteredCards[0].uniqueName})
+        // }
     };
 
     handleSubmit = (event) => {
         event.preventDefault()
-        console.log('this.props.filteredCards', this.props.filteredCards)
-        this.props.addNewCard(this.props.filteredCards.filter(v => v.multiverseid === this.state.selectedCard)[0]);
+        // console.log('this.props.filteredCards', this.props.filteredCards)
+        // let selected = this.props.filteredCards.filter(v => v.uniqueName === this.state.selectedCard)[0] || false
+        // let defaulted = this.props.filteredCards.filter(v => v.uniqueName === this.state.input)[0] || false
 
+        // let cardToSubmit = (selected)?selected:(defaulted)?defaulted:false
+        console.log(this.props.selectedCard)
+
+        if (this.props.selectedCard) this.props.addNewCard(this.props.selectedCard);
     }
+
     handleSelect = (event) => {
         event.preventDefault()
-        console.log(event.target.value.slice(event.target.value.indexOf('#') + 1))
-        this.setState({ selectedCard: event.target.value.slice(event.target.value.indexOf('#') + 1) })
-        // console.log(this.setState.cards[0].UniqueName)
+        console.log(this.state)
+        // console.log('handle select: ', event.target.value)
+        // this.setState({ selectedCard: event.target.value })
+        // console.log('handled select',this.state)
     }
 
 
@@ -51,10 +64,12 @@ class DeckBuilderContainer extends Component {
                 <div>
                     <form method='POST' onSubmit={this.handleSubmit}>
                         <AutoComplete
-                            hintText="Type anything"
-                            dataSource={this.props.filteredCards.map(v => v.name + ' (' + v.set + ') #' + v.multiverseid)}
+                            hintText="Type anything, just don't expect much"
+                            dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
-                            onSelect={this.handleSelect}
+                            /* onSelect={this.handleSelect} */
+                            style={{width: 400}}
+                            fullWidth={true}
                         />
                         <FlatButton label="Submit" primary={true} type='submit' />
                     </form>
@@ -70,15 +85,16 @@ class DeckBuilderContainer extends Component {
 function mapStateToProps(storeState) {
     return {
         filteredCards: storeState.filteredCards,
-        deckList: storeState.deckReducer
+        deckList: storeState.deckReducer,
+        selectedCard: storeState.selectedCardReducer
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        loadCards: () => {
-            dispatch(fetchCards())
-        },
+        // loadCards: () => {
+        //     dispatch(fetchCards())
+        // },
         loadFilteredCards: (value) => {
             dispatch(fetchFilteredCards(value))
         },

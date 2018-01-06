@@ -5712,6 +5712,8 @@ var _axios = __webpack_require__(264);
 
 var _axios2 = _interopRequireDefault(_axios);
 
+var _selectedCard = __webpack_require__(361);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //action typec
@@ -5746,11 +5748,13 @@ var getFilteredCards = exports.getFilteredCards = function getFilteredCards(filt
 // }
 
 var fetchFilteredCards = exports.fetchFilteredCards = function fetchFilteredCards(value) {
-    //console.log('entering thunk', value)
     return function thunk(dispatch) {
         _axios2.default.get('api/cards/filteredcards/' + value).then(function (res) {
-            //console.log('leaving thunk', res.data)
-            dispatch(getFilteredCards(res.data));
+            var cards = res.data;
+            dispatch(getFilteredCards(cards));
+            return cards;
+        }).then(function (cards) {
+            dispatch((0, _selectedCard.getSelectedCard)(value, cards));
         }).catch(console.error);
     };
 };
@@ -33577,11 +33581,16 @@ var _Deck = __webpack_require__(125);
 
 var _Deck2 = _interopRequireDefault(_Deck);
 
+var _selectedCard = __webpack_require__(361);
+
+var _selectedCard2 = _interopRequireDefault(_selectedCard);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var rootReducer = (0, _redux.combineReducers)({
     filteredCards: _cards2.default,
-    deckReducer: _Deck2.default
+    deckReducer: _Deck2.default,
+    selectedCardReducer: _selectedCard2.default
 });
 
 exports.default = rootReducer;
@@ -34568,36 +34577,47 @@ var DeckBuilderContainer = function (_Component) {
     function DeckBuilderContainer(props) {
         _classCallCheck(this, DeckBuilderContainer);
 
+        // this.state = {
+        //     selectedCard: '',
+        //     input:''
+        // }
         var _this = _possibleConstructorReturn(this, (DeckBuilderContainer.__proto__ || Object.getPrototypeOf(DeckBuilderContainer)).call(this, props));
 
         _this.handleUpdateInput = function (value) {
-            if (value.length && value.indexOf('#') === -1) {
-                console.log(value);
+
+            _this.setState({ input: value });
+            if (value.length) {
                 _this.props.loadFilteredCards(value);
             }
-            // console.log('stop shitting yourself')
-            // console.log(this.props.filteredCards[0])
-            // console.log('here here' + (this.props.filteredCards.length) ? this.props.filteredCards[0].uniqueName() : 'empty')
+
+            // if (this.props.filteredCards.map(v=>v.uniqueName).includes(value)){
+            //     this.setState({selectedCard: value})
+            // }
+            // else if (this.props.filteredCards.length && this.props.filteredCards[0].uniqueName.indexOf(this.state.input) > -1){
+            //     this.setState({selectedCard: this.props.filteredCards[0].uniqueName})
+            // }
         };
 
         _this.handleSubmit = function (event) {
             event.preventDefault();
-            console.log('this.props.filteredCards', _this.props.filteredCards);
-            _this.props.addNewCard(_this.props.filteredCards.filter(function (v) {
-                return v.multiverseid === _this.state.selectedCard;
-            })[0]);
+            // console.log('this.props.filteredCards', this.props.filteredCards)
+            // let selected = this.props.filteredCards.filter(v => v.uniqueName === this.state.selectedCard)[0] || false
+            // let defaulted = this.props.filteredCards.filter(v => v.uniqueName === this.state.input)[0] || false
+
+            // let cardToSubmit = (selected)?selected:(defaulted)?defaulted:false
+            console.log(_this.props.selectedCard);
+
+            if (_this.props.selectedCard) _this.props.addNewCard(_this.props.selectedCard);
         };
 
         _this.handleSelect = function (event) {
             event.preventDefault();
-            console.log(event.target.value.slice(event.target.value.indexOf('#') + 1));
-            _this.setState({ selectedCard: event.target.value.slice(event.target.value.indexOf('#') + 1) });
-            // console.log(this.setState.cards[0].UniqueName)
+            console.log(_this.state);
+            // console.log('handle select: ', event.target.value)
+            // this.setState({ selectedCard: event.target.value })
+            // console.log('handled select',this.state)
         };
 
-        _this.state = {
-            selectedCard: ''
-        };
         _this.handleUpdateInput = _this.handleUpdateInput.bind(_this);
         _this.handleSubmit = _this.handleSubmit.bind(_this);
         _this.handleSelect = _this.handleSelect.bind(_this);
@@ -34622,12 +34642,14 @@ var DeckBuilderContainer = function (_Component) {
                         'form',
                         { method: 'POST', onSubmit: this.handleSubmit },
                         _react2.default.createElement(_AutoComplete2.default, {
-                            hintText: 'Type anything',
+                            hintText: 'Type anything, just don\'t expect much',
                             dataSource: this.props.filteredCards.map(function (v) {
-                                return v.name + ' (' + v.set + ') #' + v.multiverseid;
+                                return v.uniqueName;
                             }),
-                            onUpdateInput: this.handleUpdateInput,
-                            onSelect: this.handleSelect
+                            onUpdateInput: this.handleUpdateInput
+                            /* onSelect={this.handleSelect} */
+                            , style: { width: 400 },
+                            fullWidth: true
                         }),
                         _react2.default.createElement(_FlatButton2.default, { label: 'Submit', primary: true, type: 'submit' })
                     )
@@ -34647,15 +34669,16 @@ var DeckBuilderContainer = function (_Component) {
 function mapStateToProps(storeState) {
     return {
         filteredCards: storeState.filteredCards,
-        deckList: storeState.deckReducer
+        deckList: storeState.deckReducer,
+        selectedCard: storeState.selectedCardReducer
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        loadCards: function loadCards() {
-            dispatch((0, _cards.fetchCards)());
-        },
+        // loadCards: () => {
+        //     dispatch(fetchCards())
+        // },
         loadFilteredCards: function loadFilteredCards(value) {
             dispatch((0, _cards.fetchFilteredCards)(value));
         },
@@ -45275,6 +45298,63 @@ var DeckList = function DeckList(props) {
 };
 
 exports.default = DeckList;
+
+/***/ }),
+/* 361 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getSelectedCard = undefined;
+
+var _axios = __webpack_require__(264);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//action typec
+var GET_SELECTED_CARD = 'GET_SELECTED_CARD';
+
+// action creator
+
+var getSelectedCard = exports.getSelectedCard = function getSelectedCard(value, cards) {
+    return {
+        type: GET_SELECTED_CARD,
+        value: value,
+        cards: cards
+    };
+};
+
+//sub reducer
+
+var selectedCardReducer = function selectedCardReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case GET_SELECTED_CARD:
+
+            // sets selected card to be equal to either a card from the users input if they have selected a card from the list, or the first thing in the list, given their input
+
+            var card = action.cards.filter(function (v) {
+                return v.uniqueName === action.value;
+            })[0] || false;
+            card = !card ? action.cards.filter(function (v) {
+                return v.name.toLowerCase().indexOf(action.value.toLowerCase()) === 0;
+            })[0] : card;
+
+            return card;
+        default:
+            return state;
+    }
+};
+
+exports.default = selectedCardReducer;
 
 /***/ })
 /******/ ]);
