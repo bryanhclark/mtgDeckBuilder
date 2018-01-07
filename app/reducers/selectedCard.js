@@ -27,7 +27,8 @@ const selectedCardReducer = (state = {}, action) => {
             let card = action.cards.filter(v => v.uniqueName === action.value)[0] || false
             card = (!card) ? action.cards.filter(v => v.name.toLowerCase().indexOf(action.value.toLowerCase()) === 0)[0] : card
 
-            return card
+            return card || state
+
         default:
             return state
     }

@@ -34580,18 +34580,21 @@ var DeckBuilderContainer = function (_Component) {
         var _this = _possibleConstructorReturn(this, (DeckBuilderContainer.__proto__ || Object.getPrototypeOf(DeckBuilderContainer)).call(this, props));
 
         _this.handleUpdateInput = function (value) {
-
             _this.setState({ input: value });
             if (value.length) {
                 _this.props.loadFilteredCards(value);
             }
+            document.getElementById(_this.state.searchBarId).focus();
         };
 
         _this.handleSubmit = function (event) {
             event.preventDefault();
-            if (_this.props.selectedCard) _this.props.addNewCard(_this.props.selectedCard);
+            if (Object.keys(_this.props.selectedCard).length) _this.props.addNewCard(_this.props.selectedCard);
         };
 
+        _this.state = {
+            searchBarId: ''
+        };
         _this.handleUpdateInput = _this.handleUpdateInput.bind(_this);
         _this.handleSubmit = _this.handleSubmit.bind(_this);
         return _this;
@@ -34600,6 +34603,8 @@ var DeckBuilderContainer = function (_Component) {
     _createClass(DeckBuilderContainer, [{
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
             return _react2.default.createElement(
                 'div',
                 null,
@@ -34620,6 +34625,9 @@ var DeckBuilderContainer = function (_Component) {
                                 return v.uniqueName;
                             }),
                             onUpdateInput: this.handleUpdateInput,
+                            onSelect: function onSelect() {
+                                return _this2.setState({ searchBarId: document.activeElement.id });
+                            },
                             style: { width: 400 },
                             fullWidth: true,
                             filter: _AutoComplete2.default.caseInsensitiveFilter
@@ -45318,7 +45326,8 @@ var selectedCardReducer = function selectedCardReducer() {
                 return v.name.toLowerCase().indexOf(action.value.toLowerCase()) === 0;
             })[0] : card;
 
-            return card;
+            return card || state;
+
         default:
             return state;
     }

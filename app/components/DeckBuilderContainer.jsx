@@ -11,21 +11,24 @@ import DeckList from './DeckList';
 class DeckBuilderContainer extends Component {
     constructor(props) {
         super(props)
+        this.state={
+            searchBarId: ''
+        }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleUpdateInput = (value) => {
-
         this.setState({input:value})
         if (value.length) {
             this.props.loadFilteredCards(value)
         }
+        document.getElementById(this.state.searchBarId).focus()
     };
 
     handleSubmit = (event) => {
         event.preventDefault()
-        if (this.props.selectedCard) this.props.addNewCard(this.props.selectedCard);
+        if (Object.keys(this.props.selectedCard).length) this.props.addNewCard(this.props.selectedCard);
     }
 
     render() {
@@ -38,6 +41,7 @@ class DeckBuilderContainer extends Component {
                             hintText="Type anything, just don't expect much"
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
+                            onSelect={()=>this.setState({searchBarId: document.activeElement.id})}
                             style={{width: 400}}
                             fullWidth={true}
                             filter={AutoComplete.caseInsensitiveFilter}
