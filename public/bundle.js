@@ -34577,10 +34577,6 @@ var DeckBuilderContainer = function (_Component) {
     function DeckBuilderContainer(props) {
         _classCallCheck(this, DeckBuilderContainer);
 
-        // this.state = {
-        //     selectedCard: '',
-        //     input:''
-        // }
         var _this = _possibleConstructorReturn(this, (DeckBuilderContainer.__proto__ || Object.getPrototypeOf(DeckBuilderContainer)).call(this, props));
 
         _this.handleUpdateInput = function (value) {
@@ -34589,38 +34585,15 @@ var DeckBuilderContainer = function (_Component) {
             if (value.length) {
                 _this.props.loadFilteredCards(value);
             }
-
-            // if (this.props.filteredCards.map(v=>v.uniqueName).includes(value)){
-            //     this.setState({selectedCard: value})
-            // }
-            // else if (this.props.filteredCards.length && this.props.filteredCards[0].uniqueName.indexOf(this.state.input) > -1){
-            //     this.setState({selectedCard: this.props.filteredCards[0].uniqueName})
-            // }
         };
 
         _this.handleSubmit = function (event) {
             event.preventDefault();
-            // console.log('this.props.filteredCards', this.props.filteredCards)
-            // let selected = this.props.filteredCards.filter(v => v.uniqueName === this.state.selectedCard)[0] || false
-            // let defaulted = this.props.filteredCards.filter(v => v.uniqueName === this.state.input)[0] || false
-
-            // let cardToSubmit = (selected)?selected:(defaulted)?defaulted:false
-            console.log(_this.props.selectedCard);
-
             if (_this.props.selectedCard) _this.props.addNewCard(_this.props.selectedCard);
-        };
-
-        _this.handleSelect = function (event) {
-            event.preventDefault();
-            console.log(_this.state);
-            // console.log('handle select: ', event.target.value)
-            // this.setState({ selectedCard: event.target.value })
-            // console.log('handled select',this.state)
         };
 
         _this.handleUpdateInput = _this.handleUpdateInput.bind(_this);
         _this.handleSubmit = _this.handleSubmit.bind(_this);
-        _this.handleSelect = _this.handleSelect.bind(_this);
         return _this;
     }
 
@@ -34646,9 +34619,8 @@ var DeckBuilderContainer = function (_Component) {
                             dataSource: this.props.filteredCards.map(function (v) {
                                 return v.uniqueName;
                             }),
-                            onUpdateInput: this.handleUpdateInput
-                            /* onSelect={this.handleSelect} */
-                            , style: { width: 400 },
+                            onUpdateInput: this.handleUpdateInput,
+                            style: { width: 400 },
                             fullWidth: true,
                             filter: _AutoComplete2.default.caseInsensitiveFilter
                         }),
@@ -34677,9 +34649,6 @@ function mapStateToProps(storeState) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        // loadCards: () => {
-        //     dispatch(fetchCards())
-        // },
         loadFilteredCards: function loadFilteredCards(value) {
             dispatch((0, _cards.fetchFilteredCards)(value));
         },

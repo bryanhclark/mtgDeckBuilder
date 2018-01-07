@@ -11,13 +11,8 @@ import DeckList from './DeckList';
 class DeckBuilderContainer extends Component {
     constructor(props) {
         super(props)
-        // this.state = {
-        //     selectedCard: '',
-        //     input:''
-        // }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSelect = this.handleSelect.bind(this)
     }
 
     handleUpdateInput = (value) => {
@@ -26,36 +21,12 @@ class DeckBuilderContainer extends Component {
         if (value.length) {
             this.props.loadFilteredCards(value)
         }
-
-        // if (this.props.filteredCards.map(v=>v.uniqueName).includes(value)){
-        //     this.setState({selectedCard: value})
-        // }
-        // else if (this.props.filteredCards.length && this.props.filteredCards[0].uniqueName.indexOf(this.state.input) > -1){
-        //     this.setState({selectedCard: this.props.filteredCards[0].uniqueName})
-        // }
     };
 
     handleSubmit = (event) => {
         event.preventDefault()
-        // console.log('this.props.filteredCards', this.props.filteredCards)
-        // let selected = this.props.filteredCards.filter(v => v.uniqueName === this.state.selectedCard)[0] || false
-        // let defaulted = this.props.filteredCards.filter(v => v.uniqueName === this.state.input)[0] || false
-
-        // let cardToSubmit = (selected)?selected:(defaulted)?defaulted:false
-        console.log(this.props.selectedCard)
-
         if (this.props.selectedCard) this.props.addNewCard(this.props.selectedCard);
     }
-
-    handleSelect = (event) => {
-        event.preventDefault()
-        console.log(this.state)
-        // console.log('handle select: ', event.target.value)
-        // this.setState({ selectedCard: event.target.value })
-        // console.log('handled select',this.state)
-    }
-
-
 
     render() {
         return (
@@ -67,7 +38,6 @@ class DeckBuilderContainer extends Component {
                             hintText="Type anything, just don't expect much"
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
-                            /* onSelect={this.handleSelect} */
                             style={{width: 400}}
                             fullWidth={true}
                             filter={AutoComplete.caseInsensitiveFilter}
@@ -93,9 +63,6 @@ function mapStateToProps(storeState) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        // loadCards: () => {
-        //     dispatch(fetchCards())
-        // },
         loadFilteredCards: (value) => {
             dispatch(fetchFilteredCards(value))
         },
