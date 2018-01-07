@@ -34649,7 +34649,8 @@ var DeckBuilderContainer = function (_Component) {
                             onUpdateInput: this.handleUpdateInput
                             /* onSelect={this.handleSelect} */
                             , style: { width: 400 },
-                            fullWidth: true
+                            fullWidth: true,
+                            filter: _AutoComplete2.default.caseInsensitiveFilter
                         }),
                         _react2.default.createElement(_FlatButton2.default, { label: 'Submit', primary: true, type: 'submit' })
                     )

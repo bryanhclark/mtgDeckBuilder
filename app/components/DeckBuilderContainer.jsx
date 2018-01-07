@@ -70,6 +70,7 @@ class DeckBuilderContainer extends Component {
                             /* onSelect={this.handleSelect} */
                             style={{width: 400}}
                             fullWidth={true}
+                            filter={AutoComplete.caseInsensitiveFilter}
                         />
                         <FlatButton label="Submit" primary={true} type='submit' />
                     </form>
