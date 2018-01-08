@@ -34653,7 +34653,7 @@ var DeckBuilderContainer = function (_Component) {
             console.log('request!', value);
             if (Object.keys(_this.props.selectedCard).length) {
 
-                // set timeout is hacky. purpose is to make sure when you hit enter while selecting an element in the drop down that you actually add that card, rather than set that card to the selected card, THEN add the card to the deck, as opposed to trying to add the selected card and update the selected card simaltaneously -> causing race contition -> adding wrong card
+                // set timeout is hacky. purpose is to make sure when you hit enter while selecting an element in the drop down that you actually add that card. the timer means the following happens: the selected card is set to the selected card, THEN add the card to the deck, as opposed to trying to add the selected card and update the selected card simaltaneously -> causing race contition -> adding wrong card
 
                 setTimeout(function () {
                     _this.props.addNewCard(_this.props.selectedCard);
