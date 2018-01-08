@@ -60,7 +60,10 @@ class DeckBuilderContainer extends Component {
             <div>
                 <h1>MTG DECKBUILDER, suk it </h1>
                 <div>
-                    <form method='POST' onSubmit={(e)=>e.preventDefault()} >
+                    <form method='POST' onSubmit={(e)=>{
+                        e.preventDefault()
+                        this.handleReq()
+                        }} >
                         <AutoComplete
                             hintText="Type anything, just don't expect much"
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}

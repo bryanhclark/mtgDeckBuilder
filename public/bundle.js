@@ -34705,7 +34705,8 @@ var DeckBuilderContainer = function (_Component) {
                     _react2.default.createElement(
                         'form',
                         { method: 'POST', onSubmit: function onSubmit(e) {
-                                return e.preventDefault();
+                                e.preventDefault();
+                                _this2.handleReq();
                             } },
                         _react2.default.createElement(_AutoComplete2.default, {
                             hintText: 'Type anything, just don\'t expect much',
