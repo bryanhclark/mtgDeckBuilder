@@ -15,10 +15,12 @@ class DeckBuilderContainer extends Component {
             searchBarId: '',
         }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleReq = this.handleReq.bind(this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleUpdateInput = (value) => {
+        console.log('update!')
         if (value.length){
             this.props.loadFilteredCards(value)
         }
@@ -27,31 +29,47 @@ class DeckBuilderContainer extends Component {
         }
     };
 
-    handleSubmit = (event) => {
-        event.preventDefault()
-        if (Object.keys(this.props.selectedCard).length){
+    handleReq = (value) => {
+        console.log('request!',value)
+        if (Object.keys(this.props.selectedCard).length) {
 
             // set timeout is hacky. purpose is to make sure when you hit enter while selecting an element in the drop down that you actually add that card, rather than set that card to the selected card, THEN add the card to the deck, as opposed to trying to add the selected card and update the selected card simaltaneously -> causing race contition -> adding wrong card
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.props.addNewCard(this.props.selectedCard);
                 document.getElementById(this.state.searchBarId).value = ''
-            }, 200);
+            }, 100);
         }
     }
+
+    // // handle submit is redundant because handle new request is bound to onclick and enter key
+
+    // handleSubmit = (event) => {
+    //     console.log('submit!')
+    //     event.preventDefault()
+    //     if (Object.keys(this.props.selectedCard).length){
+    //         setTimeout(()=>{
+    //             this.props.addNewCard(this.props.selectedCard);
+    //             document.getElementById(this.state.searchBarId).value = ''
+    //         }, 100);
+    //     }
+    // }
 
     render() {
         return (
             <div>
                 <h1>MTG DECKBUILDER, suk it </h1>
                 <div>
-                    <form method='POST' onSubmit={this.handleSubmit}>
+                    <form method='POST' onSubmit={(e)=>e.preventDefault()} >
                         <AutoComplete
                             hintText="Type anything, just don't expect much"
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
                             onSelect={()=>{
                                 if(!this.state.searchBarId) this.setState({searchBarId: document.activeElement.id})
+                            }}
+                            onNewRequest={(v)=>{
+                                this.handleReq(v)
                             }}
                             style={{width: 500}}
                             fullWidth={true}

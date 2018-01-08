@@ -34640,6 +34640,7 @@ var DeckBuilderContainer = function (_Component) {
         var _this = _possibleConstructorReturn(this, (DeckBuilderContainer.__proto__ || Object.getPrototypeOf(DeckBuilderContainer)).call(this, props));
 
         _this.handleUpdateInput = function (value) {
+            console.log('update!');
             if (value.length) {
                 _this.props.loadFilteredCards(value);
             }
@@ -34648,8 +34649,8 @@ var DeckBuilderContainer = function (_Component) {
             }
         };
 
-        _this.handleSubmit = function (event) {
-            event.preventDefault();
+        _this.handleReq = function (value) {
+            console.log('request!', value);
             if (Object.keys(_this.props.selectedCard).length) {
 
                 // set timeout is hacky. purpose is to make sure when you hit enter while selecting an element in the drop down that you actually add that card, rather than set that card to the selected card, THEN add the card to the deck, as opposed to trying to add the selected card and update the selected card simaltaneously -> causing race contition -> adding wrong card
@@ -34657,7 +34658,7 @@ var DeckBuilderContainer = function (_Component) {
                 setTimeout(function () {
                     _this.props.addNewCard(_this.props.selectedCard);
                     document.getElementById(_this.state.searchBarId).value = '';
-                }, 200);
+                }, 100);
             }
         };
 
@@ -34665,12 +34666,28 @@ var DeckBuilderContainer = function (_Component) {
             searchBarId: ''
         };
         _this.handleUpdateInput = _this.handleUpdateInput.bind(_this);
-        _this.handleSubmit = _this.handleSubmit.bind(_this);
+        _this.handleReq = _this.handleReq.bind(_this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
         return _this;
     }
 
     _createClass(DeckBuilderContainer, [{
         key: 'render',
+
+
+        // // handle submit is redundant because handle new request is bound to onclick and enter key
+
+        // handleSubmit = (event) => {
+        //     console.log('submit!')
+        //     event.preventDefault()
+        //     if (Object.keys(this.props.selectedCard).length){
+        //         setTimeout(()=>{
+        //             this.props.addNewCard(this.props.selectedCard);
+        //             document.getElementById(this.state.searchBarId).value = ''
+        //         }, 100);
+        //     }
+        // }
+
         value: function render() {
             var _this2 = this;
 
@@ -34687,7 +34704,9 @@ var DeckBuilderContainer = function (_Component) {
                     null,
                     _react2.default.createElement(
                         'form',
-                        { method: 'POST', onSubmit: this.handleSubmit },
+                        { method: 'POST', onSubmit: function onSubmit(e) {
+                                return e.preventDefault();
+                            } },
                         _react2.default.createElement(_AutoComplete2.default, {
                             hintText: 'Type anything, just don\'t expect much',
                             dataSource: this.props.filteredCards.map(function (v) {
@@ -34696,6 +34715,9 @@ var DeckBuilderContainer = function (_Component) {
                             onUpdateInput: this.handleUpdateInput,
                             onSelect: function onSelect() {
                                 if (!_this2.state.searchBarId) _this2.setState({ searchBarId: document.activeElement.id });
+                            },
+                            onNewRequest: function onNewRequest(v) {
+                                _this2.handleReq(v);
                             },
                             style: { width: 500 },
                             fullWidth: true,
