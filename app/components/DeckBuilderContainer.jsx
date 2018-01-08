@@ -12,25 +12,32 @@ class DeckBuilderContainer extends Component {
     constructor(props) {
         super(props)
         this.state={
-            searchBarId: ''
+            searchBarId: '',
         }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleUpdateInput = (value) => {
-        this.setState({input:value})
-        if (value.length) {
+        if (value.length){
             this.props.loadFilteredCards(value)
         }
-        setTimeout(()=>{
+        if (this.state.searchBarId !== '' && document.activeElement.id !== this.state.searchBarId){
             document.getElementById(this.state.searchBarId).focus()
-        },200)
+        }
     };
 
     handleSubmit = (event) => {
         event.preventDefault()
-        if (Object.keys(this.props.selectedCard).length) this.props.addNewCard(this.props.selectedCard);
+        if (Object.keys(this.props.selectedCard).length){
+
+            // set timeout is hacky. purpose is to make sure when you hit enter while selecting an element in the drop down that you actually add that card, rather than set that card to the selected card, THEN add the card to the deck, as opposed to trying to add the selected card and update the selected card simaltaneously -> causing race contition -> adding wrong card
+
+            setTimeout(()=>{
+                this.props.addNewCard(this.props.selectedCard);
+                document.getElementById(this.state.searchBarId).value = ''
+            }, 200);
+        }
     }
 
     render() {
@@ -43,10 +50,9 @@ class DeckBuilderContainer extends Component {
                             hintText="Type anything, just don't expect much"
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
-                            onSelect={(e)=>{
-                                    e.preventDefault()
-                                    this.setState({searchBarId: document.activeElement.id}
-                                )}}
+                            onSelect={()=>{
+                                if(!this.state.searchBarId) this.setState({searchBarId: document.activeElement.id})
+                            }}
                             style={{width: 500}}
                             fullWidth={true}
                             filter={AutoComplete.caseInsensitiveFilter}
