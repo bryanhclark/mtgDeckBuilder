@@ -45,6 +45,7 @@ export const fetchFilteredCards = (value) => {
                 return cards
             })
             .then(cards => {
+                console.log(value)
                 dispatch(getSelectedCard(value,cards))
             })
             .catch(console.error)

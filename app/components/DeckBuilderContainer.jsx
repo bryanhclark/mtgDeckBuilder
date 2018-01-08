@@ -23,7 +23,9 @@ class DeckBuilderContainer extends Component {
         if (value.length) {
             this.props.loadFilteredCards(value)
         }
-        document.getElementById(this.state.searchBarId).focus()
+        setTimeout(()=>{
+            document.getElementById(this.state.searchBarId).focus()
+        },200)
     };
 
     handleSubmit = (event) => {
@@ -41,8 +43,11 @@ class DeckBuilderContainer extends Component {
                             hintText="Type anything, just don't expect much"
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
-                            onSelect={()=>this.setState({searchBarId: document.activeElement.id})}
-                            style={{width: 400}}
+                            onSelect={(e)=>{
+                                    e.preventDefault()
+                                    this.setState({searchBarId: document.activeElement.id}
+                                )}}
+                            style={{width: 500}}
                             fullWidth={true}
                             filter={AutoComplete.caseInsensitiveFilter}
                         />

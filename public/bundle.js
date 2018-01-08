@@ -5754,6 +5754,7 @@ var fetchFilteredCards = exports.fetchFilteredCards = function fetchFilteredCard
             dispatch(getFilteredCards(cards));
             return cards;
         }).then(function (cards) {
+            console.log(value);
             dispatch((0, _selectedCard.getSelectedCard)(value, cards));
         }).catch(console.error);
     };
@@ -34584,7 +34585,9 @@ var DeckBuilderContainer = function (_Component) {
             if (value.length) {
                 _this.props.loadFilteredCards(value);
             }
-            document.getElementById(_this.state.searchBarId).focus();
+            setTimeout(function () {
+                document.getElementById(_this.state.searchBarId).focus();
+            }, 200);
         };
 
         _this.handleSubmit = function (event) {
@@ -34625,10 +34628,11 @@ var DeckBuilderContainer = function (_Component) {
                                 return v.uniqueName;
                             }),
                             onUpdateInput: this.handleUpdateInput,
-                            onSelect: function onSelect() {
-                                return _this2.setState({ searchBarId: document.activeElement.id });
+                            onSelect: function onSelect(e) {
+                                e.preventDefault();
+                                _this2.setState({ searchBarId: document.activeElement.id });
                             },
-                            style: { width: 400 },
+                            style: { width: 500 },
                             fullWidth: true,
                             filter: _AutoComplete2.default.caseInsensitiveFilter
                         }),
@@ -45318,14 +45322,15 @@ var selectedCardReducer = function selectedCardReducer() {
         case GET_SELECTED_CARD:
 
             // sets selected card to be equal to either a card from the users input if they have selected a card from the list, or the first thing in the list, given their input
-
+            console.log(action);
             var card = action.cards.filter(function (v) {
                 return v.uniqueName === action.value;
             })[0] || false;
+            console.log(card);
             card = !card ? action.cards.filter(function (v) {
                 return v.name.toLowerCase().indexOf(action.value.toLowerCase()) === 0;
             })[0] : card;
-
+            console.log(card);
             return card || state;
 
         default:

@@ -23,10 +23,11 @@ const selectedCardReducer = (state = {}, action) => {
         case GET_SELECTED_CARD:
 
             // sets selected card to be equal to either a card from the users input if they have selected a card from the list, or the first thing in the list, given their input
-
+            console.log(action)
             let card = action.cards.filter(v => v.uniqueName === action.value)[0] || false
+            console.log(card)
             card = (!card) ? action.cards.filter(v => v.name.toLowerCase().indexOf(action.value.toLowerCase()) === 0)[0] : card
-
+            console.log(card)
             return card || state
 
         default:
