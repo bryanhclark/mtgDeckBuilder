@@ -6,13 +6,15 @@ import FlatButton from 'material-ui/FlatButton';
 import { fetchCards, fetchFilteredCards } from '../reducers/cards'
 import { addCardToDeck } from '../reducers/Deck'
 import AutoComplete from 'material-ui/AutoComplete';
-import DeckList from './DeckList';
+import DeckListView from './DeckList';
 
 class DeckBuilderContainer extends Component {
     constructor(props) {
         super(props)
         this.state={
             searchBarId: '',
+            searchText: '',
+            savedSearch: ''
         }
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
         this.handleReq = this.handleReq.bind(this);
@@ -21,6 +23,7 @@ class DeckBuilderContainer extends Component {
 
     handleUpdateInput = (value) => {
         console.log('update!')
+        this.setState({ searchText: value })
         if (value.length){
             this.props.loadFilteredCards(value)
         }
@@ -31,7 +34,7 @@ class DeckBuilderContainer extends Component {
 
     handleReq = (value) => {
         console.log('request!',value)
-        if (Object.keys(this.props.selectedCard).length) {
+        if (Object.keys(this.props.selectedCard).length && this.state.searchText.length) {
 
             // set timeout is hacky. purpose is to make sure when you hit enter while selecting an element in the drop down that you actually add that card. the timer means the following happens: the selected card is set to the selected card, THEN add the card to the deck, as opposed to trying to add the selected card and update the selected card simaltaneously -> causing race contition -> adding wrong card
 
@@ -41,19 +44,6 @@ class DeckBuilderContainer extends Component {
             }, 100);
         }
     }
-
-    // // handle submit is redundant because handle new request is bound to onclick and enter key
-
-    // handleSubmit = (event) => {
-    //     console.log('submit!')
-    //     event.preventDefault()
-    //     if (Object.keys(this.props.selectedCard).length){
-    //         setTimeout(()=>{
-    //             this.props.addNewCard(this.props.selectedCard);
-    //             document.getElementById(this.state.searchBarId).value = ''
-    //         }, 100);
-    //     }
-    // }
 
     render() {
         return (
@@ -66,6 +56,7 @@ class DeckBuilderContainer extends Component {
                         }} >
                         <AutoComplete
                             hintText="Type anything, just don't expect much"
+                            searchText={this.state.searchText}
                             dataSource={this.props.filteredCards.map(v => v.uniqueName)}
                             onUpdateInput={this.handleUpdateInput}
                             onSelect={()=>{
@@ -73,6 +64,7 @@ class DeckBuilderContainer extends Component {
                             }}
                             onNewRequest={(v)=>{
                                 this.handleReq(v)
+                                this.setState({searchText: ''})
                             }}
                             style={{width: 500}}
                             fullWidth={true}
@@ -82,7 +74,7 @@ class DeckBuilderContainer extends Component {
                     </form>
                 </div>
                 <div id='cardViewContainer'>
-                    <DeckList deckList={this.props.deckList} />
+                    <DeckListView deckList={this.props.deckList} />
                 </div>
             </div>
         )
@@ -104,6 +96,9 @@ function mapDispatchToProps(dispatch) {
         },
         addNewCard: (card) => {
             dispatch(addCardToDeck(card));
+        },
+        UnselectCard: () => {
+            dispatch(unselectCard());
         }
     }
 }

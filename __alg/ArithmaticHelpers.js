@@ -1,13 +1,5 @@
-// EXPORTS THE FOLLOWING FUNCTIONS:
-// probabilityOfPlayingCard
-// JSONmanaBase
-// cardCost
-// cardPlayable
-
-// currently fetch lands are being handled as deck-thinners. their 'ProducibleManaColors' is denoted is an 'F'
-
 // fuckJS
-Array.prototype.copy = function() {
+Array.prototype.copy = function () {
   return this.reduce((a, b) => {
     if (Array.isArray(b)) a.push(b.copy());
     else a.push(b);
@@ -30,32 +22,9 @@ function copy(data) {
   } else return data;
 }
 
-// computes statistic
-
-function simDeck(cardsDrawn, card, deck, trials, startingHandSize = 7) {
-  let sum = 0;
-  let hand;
-  let cost = cardCost(card)
-  for (var i = trials; i > 0; i--) {
-    shuffle(deck);
-    hand = deck.slice(0, cardsDrawn);
-    hand = hand.reduce((a,b)=>{
-      if(b.ProducibleManaColors==='F'){
-        a.push(landToFetch(cost,deck.slice(cardsDrawn),b.fetchOptions))
-        a.splice(a.indexOf(b),1)
-      }
-      return a
-    },hand)
-    sum = cardPlayable(cardsDrawn, card, hand, startingHandSize)
-      ? (sum += 1)
-      : sum;
-  }
-  return sum / trials;
-}
-
 // computes probability
 
-export function probabilityOfPlayingCard(
+export const probabilityOfPlayingCard = function(
   cardsDrawn,
   card,
   deck,
@@ -72,7 +41,7 @@ export function probabilityOfPlayingCard(
     goodHands.forEach(hand => {
       P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
     });
-    return P.toFixed(8);
+    return P.toFixed(3);
   } else return 0;
 }
 
@@ -90,25 +59,25 @@ function parseHands(numCards, card, deck) {
   // * place for possible adjustments
   // fetch-land adjustment
   let costCopy = copy(cost)
-  deck = deck.reduce((a,b)=>{
-    if(b.ProducibleManaColors === 'F'){
-      let f = landToFetch(costCopy,a,b.fetchOptions)
-      a.push(landToFetch(costCopy,a,b.fetchOptions))
+  deck = deck.reduce((a, b) => {
+    if (b.ProducibleManaColors === 'F') {
+      let f = landToFetch(costCopy, a, b.fetchOptions)
+      a.push(landToFetch(costCopy, a, b.fetchOptions))
 
       // adjusts cost to weight unfetched lands more heavily
-      Object.keys(costCopy).forEach(v=>{
-        if(!f.ProducibleManaColors.split(',').includes(v)) costCopy[v]++
+      Object.keys(costCopy).forEach(v => {
+        if (!f.ProducibleManaColors.split(',').includes(v)) costCopy[v]++
       })
     }
     return a
-  },deck.copy()).filter(
+  }, deck.copy()).filter(
     v => (v.ProducibleManaColors ? !(v.ProducibleManaColors === 'F') : true)
-  );
+    );
 
   // deck bins: target, lands, other
   let deckBins = deck.reduce(
     (a, b) => {
-      if (b.types.indexOf('Land')>-1) {
+      if (b.type.includes('Land')) {
         a.L++;
       } else if (b.name === card.name) {
         a.T++;
@@ -248,19 +217,19 @@ function parseHands(numCards, card, deck) {
 
 // creates JSON manaBase
 
-export function JSONmanaBase(deck) {
+function JSONmanaBase(deck) {
   return deck.reduce((a, b) => {
     if (b.ProducibleManaColors) {
       if (a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++;
-      else a[b.ProducibleManaColors] = 1;
+      else if (b.ProducibleManaColors!=='false') a[b.ProducibleManaColors] = 1;
     }
     return a;
   }, {});
 }
 
-// creates JSON manaCost
+// arrayifies manaCost
 
-export function cardCost(card) {
+function cardCost(card) {
   return card.manaCost
     .split('{')
     .slice(1)
@@ -277,51 +246,40 @@ export function cardCost(card) {
     }, {});
 }
 
-// fisher-yates
-function shuffle(a) {
-  var j, x, i;
-  for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    x = a[i];
-    a[i] = a[j];
-    a[j] = x;
-  }
-}
-
 // best guess at land to fetch, returns a new card object
 // * place for possible adjustments
 // ** this is an optimization problem, expert discretion important here**
 function landToFetch(manaCost, deck, fetchOptions) {
   return deck
     .filter(
-      v =>{
-        return v.type.split(' ').includes(fetchOptions.split(',')[0]) ||
+    v => {
+      return v.type.split(' ').includes(fetchOptions.split(',')[0]) ||
         v.type.split(' ').includes(fetchOptions.split(',')[1])
     })
     .reduce(
-      (a, b) => {
-        let score = 0;
-        Object.keys(manaCost).forEach(v => {
-          if (b.ProducibleManaColors.split(',').includes(v)) {
-            // this line is the one that needs expertise
-            score += manaCost[v] + b.ProducibleManaColors.length;
-          }
-        });
-        if (score > a[0]) a = [score, copy(b)];
-        return a
-      },
-      [0, null]
+    (a, b) => {
+      let score = 0;
+      Object.keys(manaCost).forEach(v => {
+        if (b.ProducibleManaColors.split(',').includes(v)) {
+          // this line is the one that needs expertise
+          score += manaCost[v] + b.ProducibleManaColors.length;
+        }
+      });
+      if (score > a[0]) a = [score, copy(b)];
+      return a
+    },
+    [0, null]
     )[1];
 }
 
 // boolean of if deck (or hand) can play card
 // *works well atm
-export function cardPlayable(draws, card, deck, startingHandSize = 7) {
+function cardPlayable(draws, card, deck, startingHandSize = 7) {
   deck = deck.copy();
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => a + cost[b], 0);
   let manaBase = JSONmanaBase(deck);
-  let turnCondition = draws - startingHandSize >= convertedManaCost;
+  let turnCondition = draws - startingHandSize >= convertedManaCost-1;
   let manaCondition =
     Object.keys(manaBase).reduce((a, b) => a + manaBase[b], 0) >=
     convertedManaCost;
@@ -394,6 +352,7 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
       numerator,
       memo[cards[i][1].toString() + ',' + cards[i][0].toString()]
     );
+    console.log(numerator,denomenator)
   }
   return divideString(numerator, denomenator, 8);
 }
@@ -426,7 +385,7 @@ function factorialString(n) {
 function StringPower(n, p) {
   // // input check:
   // console.log('pow',n,p)
-  result = '1';
+  let result = '1';
   while (p) {
     if (p & 1) {
       result = multiplyString(result, n);
@@ -487,8 +446,8 @@ function divideString(a, b, d) {
   stack = stack.join('');
   return d
     ? stack.slice(0, a.length).replace(/^(0(?!$))+/, '') +
-        '.' +
-        stack.slice(a.length)
+    '.' +
+    stack.slice(a.length)
     : stack.replace(/^(0(?!$))+/, '');
 }
 
@@ -519,7 +478,7 @@ function subtractString(n, m) {
   while (nn.length > mm.length) mm.push('0');
   while (mm.length > nn.length) nn.push('0');
   let kk = [];
-  for (i = 0; i < mm.length; i++) {
+  for (var i = 0; i < mm.length; i++) {
     if (greaterThan(mm[i], nn[i])) {
       nn[i] = (parseInt(nn[i]) + 10).toString();
       nn[i + 1] = (nn[i + 1] - 1).toString();

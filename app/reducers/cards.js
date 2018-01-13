@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getSelectedCard } from './selectedCard'
+import { getSelectedCard, unselectCard } from './selectedCard'
 
 
 //action typec
@@ -46,7 +46,7 @@ export const fetchFilteredCards = (value) => {
             })
             .then(cards => {
                 console.log(value)
-                dispatch(getSelectedCard(value,cards))
+                return dispatch(getSelectedCard(value,cards))
             })
             .catch(console.error)
     }

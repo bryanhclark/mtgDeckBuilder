@@ -53,7 +53,18 @@ cardSets.forEach(function (cardSet) {
 const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
     if (card.multiverseid) {
 
-        let ProducibleManaColors = (card.text)?(card.type.indexOf('Land') === -1) ?
+        let ProducibleManaColors =
+            (card.type.indexOf('Land')>-1)?
+                card.type.split(' ').reduce((a,b)=>{
+                    if (b === 'Swamp') a += 'B'
+                    if (b === 'Forest') a += 'G'
+                    if (b === 'Plains') a += 'W'
+                    if (b === 'Mountain') a += 'R'
+                    if (b === 'Island') a += 'U'
+                    return a
+                },'')
+            :
+            ((card.text)?(card.type.indexOf('Land') === -1) ?
             false :
             card.text.split('\n').reduce((a, b) => {
                 if (b.indexOf('{T}') < b.indexOf('Add')) {
@@ -69,7 +80,8 @@ const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
                     a += 'F'
                 }
                 return a
-            }, '').split('').sort().join(',') || false : false
+            }, '').split('').sort().join(',') || false : false)
+            // the above crawls the cards text for mana production and fetchign if the card is not a basic land
 
         let fetchOptions = (ProducibleManaColors === 'F') ? card.text.split('\n').reduce((a, b) => {
             if (b.indexOf(`Sacrifice ${card.name}: Search`) > -1) {
