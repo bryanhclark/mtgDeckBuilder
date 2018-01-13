@@ -212,6 +212,8 @@ function parseHands(numCards, card, deck) {
     return a;
   }, []);
 
+  console.log(viable)
+
   return viable;
 }
 

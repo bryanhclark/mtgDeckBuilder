@@ -62,7 +62,7 @@ const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
                     if (b === 'Mountain') a += 'R'
                     if (b === 'Island') a += 'U'
                     return a
-                },'')
+                }, '').split('').sort().join(',')
             :
             ((card.text)?(card.type.indexOf('Land') === -1) ?
             false :
