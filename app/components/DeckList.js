@@ -156,24 +156,5 @@ const DeckListView = connect(mapStateToProps, mapDispatchToProps)(DeckList)
 
 export default DeckListView;
 
-
-// const testCard = {
-//     manaCost: "{3}{R}{R}",
-//     multiverseid: 234702,
-//     name:"Fire Servant",
-//     set:"Premium Deck Series: Fire and Lightning",
-//     text:"If a red instant or sorcery spell you control would deal damage, it deals double that damage instead.",
-//     uniqueName:"Fire Servant (Premium Deck Series: Fire and Lightning) #234702"
-//     }
-
-//     < div id= 'deckList' >
-//         {
-//             props.deckList.map(card =>
-//                 (
-//                     <div key={card.multiverseid} className='cardView'>
-//                         <img src={`http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.multiverseid}&type=card`} />
-//                         <p >{card.name}</p>
-//                     </div>
-//                 ))
-//         }
-//         </div >
+// // // IMAGE URLS ARE OF THE FOLLOWING FORM
+// <img src={`http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.multiverseid}&type=card`} />
