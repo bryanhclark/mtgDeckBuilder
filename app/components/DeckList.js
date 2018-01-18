@@ -6,6 +6,7 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import ContentClear from 'material-ui/svg-icons/content/clear';
+import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';
 import {
     Table,
     TableBody,
@@ -15,32 +16,66 @@ import {
     TableRowColumn,
 } from 'material-ui/Table';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
-import { probabilityOfPlayingCard } from '../../__alg/ArithmaticHelpers'
+import { ProbCell } from './ProbabilityCell'
+import Drawer from 'material-ui/Drawer';
 
+  // blue #0D47A1
+  // red #C62828
+  // green #2E7D32
+  // white #FFE57F
+  // black #212121
 
 class DeckList extends Component {
     constructor(props){
         super(props)
         this.state = {
-            calculating: false
+            drawer: false,
+            selectedCard:{}
         }
+        this.convertToList = this.convertToList.bind(this)
     }
 
+    convertToList(deck) {
+        return deck.reduce((a, b) => {
+            for (var i = 0; i < b.quantity; i++) {
+                a.push(Object.assign({}, b))
+            }
+            return a
+        }, [])
+    }
+
+    // now renders when it is first mounted, doesnt rerender when props are updated
+
     render(){
-
-        const convertToList = (deck) => {
-            return deck.reduce((a,b)=>{
-                for(var i=0;i<b.quantity;i++){
-                    a.push(Object.assign({},b))
-                }
-                return a
-            },[])
-        }
-
         if (this.props){
             return (
                 <div className="DeckListContainer">
+                    <Drawer
+                        open={this.state.drawer}
+                        openSecondary={true}
+                        docked={true}
+                        width={"72%"}
+                    >
+                        <div>
+                        <div>
+                            <img
+                                style={{width:300,height:'auto'}}
+                                src={`http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${this.state.selectedCard.multiverseid}&type=card`}
+                            />
+                        </div>
+                        <FloatingActionButton
+                            style={{ transform: 'translate(130px, 10px)'}}
+                            disabled={!this.state.drawer}
+                            label={''}
+                            backgroundColor={"#FFE57F"}
+                            mini={true}
+                            onClick={(e) => this.setState({ drawer: !this.state.drawer })}>
+                            <RemoveRedEye />
+                        </FloatingActionButton>
+                        </div>
+                    </Drawer>
                     <Table>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
@@ -65,64 +100,63 @@ class DeckList extends Component {
                                     return(
                                         <TableRow>
                                             <TableRowColumn
-                                                style={{ width: '25%' }}
-                                                onHover={()=>{
-                                                    return(
-                                                        <img src={`http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${card.multiverseid}&type=card`} />
-                                                    )
-                                                }}
-                                            >{card.name}</TableRowColumn>
+                                                style={{ width: '20%'}}
+                                                >
+                                                {card.name}
+                                            </TableRowColumn>
+                                            <TableRowColumn style={{ width: '8%' }}>
+                                                <FloatingActionButton
+                                                    disabled={this.state.drawer}
+                                                    label={''}
+                                                    backgroundColor={"#FFE57F"}
+                                                    mini={true}
+                                                    onClick={(e) => this.setState({ drawer: !this.state.drawer, selectedCard: card })}>
+                                                    <RemoveRedEye />
+                                                </FloatingActionButton>
+                                            </TableRowColumn>
                                             <TableRowColumn style={{ width: '5%' }}>{card.quantity}</TableRowColumn>
-                                            <TableRowColumn style={{ width: '9%' }}>
+                                            <TableRowColumn style={{ width: '8%' }}>
                                                 <FloatingActionButton
                                                     disabled={card.quantity>3 && !card.type.includes('Basic Land')}
-                                                    backgroundColor={"green"}
+                                                    backgroundColor={"#2E7D32"}
                                                     mini={true}
                                                     onClick={() => this.props.updateCardQuant(card.uniqueName, card.quantity + 1)}>
                                                     <ContentAdd />
                                                 </FloatingActionButton>
                                             </TableRowColumn>
-                                            <TableRowColumn style={{ width: '9%' }}>
+                                            <TableRowColumn style={{ width: '8%' }}>
                                                 <FloatingActionButton
                                                     disabled={card.quantity < 1}
-                                                    backgroundColor={"blue"}
+                                                    backgroundColor={"#0D47A1"}
                                                     mini={true}
-                                                    onClick={() => this.props.updateCardQuant(card.uniqueName, card.quantity - 1)}>
+                                                    onClick={() => {
+                                                        this.props.updateCardQuant(card.uniqueName, card.quantity - 1)
+                                                        }
+                                                    }>
                                                     <ContentRemove />
                                                 </FloatingActionButton>
                                             </TableRowColumn>
-                                            <TableRowColumn style={{ width: '9%' }}>
+                                            <TableRowColumn style={{ width: '8%' }}>
                                                 <FloatingActionButton
-                                                    backgroundColor={"red"}
+                                                    backgroundColor={"#C62828"}
                                                     mini={true}
                                                     onClick={() => this.props.removeCard(card.uniqueName)}>
                                                     <ContentClear />
                                                 </FloatingActionButton>
                                             </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(7,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(8,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(9,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(10,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(11,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(12,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(13,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
-                                            <TableRowColumn style={{ width: '5%' }}>
-                                                {(typeof card.manaCost!=='string')?'':probabilityOfPlayingCard(14,card,convertToList(this.props.deck))}
-                                            </TableRowColumn>
+                                            {
+                                                [0,1,2,3,4,5,6,7].map(v=>{
+                                                    return (
+                                                        <TableRowColumn style={{ width: '5%' }}>
+                                                            <ProbCell
+                                                                draws={7 + v}
+                                                                card={card}
+                                                                deck={this.convertToList(this.props.deckList)}
+                                                            />
+                                                        </TableRowColumn>
+                                                    )
+                                                })
+                                            }
                                         </TableRow>
                                     )
                                 })

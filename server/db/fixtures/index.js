@@ -2,8 +2,6 @@ const db = require('../models');
 const Card = db.Card
 const mtgJson = require('./AllSets.json')
 
-
-
 //an array of all the keys
 
 //within each set[array] -> get cards array
@@ -52,10 +50,12 @@ cardSets.forEach(function (cardSet) {
 
 const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
     if (card.multiverseid) {
-
-        let ProducibleManaColors =
-            (card.type.indexOf('Land')>-1)?
-                card.type.split(' ').reduce((a,b)=>{
+        function parse(card){
+            let P =''
+            let F=''
+            if(!card.text) card.text = ''
+            if(card.type.includes('Land')) {
+                P += card.type.split(' ').reduce((a, b) => {
                     if (b === 'Swamp') a += 'B'
                     if (b === 'Forest') a += 'G'
                     if (b === 'Plains') a += 'W'
@@ -63,37 +63,38 @@ const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
                     if (b === 'Island') a += 'U'
                     return a
                 }, '').split('').sort().join(',')
-            :
-            ((card.text)?(card.type.indexOf('Land') === -1) ?
-            false :
-            card.text.split('\n').reduce((a, b) => {
-                if (b.indexOf('{T}') < b.indexOf('Add')) {
-                    if (b.indexOf('{B}') > 0 && a.indexOf('B') < 0) a += 'B'
-                    if (b.indexOf('{G}') > 0 && a.indexOf('G') < 0) a += 'G'
-                    if (b.indexOf('{W}') > 0 && a.indexOf('W') < 0) a += 'W'
-                    if (b.indexOf('{R}') > 0 && a.indexOf('R') < 0) a += 'R'
-                    if (b.indexOf('{U}') > 0 && a.indexOf('U') < 0) a += 'U'
-                    if (b.indexOf('{C}') > 0 && a.indexOf('C') < 0) a += 'C'
-                    if (b.indexOf('any color') > 0 && a.indexOf('B') < 0) a += 'WRGBU'
+                if (card.text.indexOf('{B}') > 0 && P.indexOf('B') < 0) P += 'B'
+                if (card.text.indexOf('{G}') > 0 && P.indexOf('G') < 0) P += 'G'
+                if (card.text.indexOf('{W}') > 0 && P.indexOf('W') < 0) P += 'W'
+                if (card.text.indexOf('{R}') > 0 && P.indexOf('R') < 0) P += 'R'
+                if (card.text.indexOf('{U}') > 0 && P.indexOf('U') < 0) P += 'U'
+                if (card.text.indexOf('{C}') > 0 && P.indexOf('C') < 0) P += 'C'
+                if (card.text.indexOf('any color') > 0 && P.indexOf('B') < 0) P += 'WRGBU'
+                if (card.text.indexOf(`Sacrifice ${card.name}: Search`) > -1) {
+                    P += 'F'
                 }
+            }
+
+            if(P === '') P = false
+            else P = P.split('').sort().reduce((a, b) => (a.includes(b) || b=== ' ' || b===',') ? a : a.concat(b),[]).join(',')
+
+            F = (P === 'F') ? card.text.split('\n').reduce((a, b) => {
                 if (b.indexOf(`Sacrifice ${card.name}: Search`) > -1) {
-                    a += 'F'
+                    if (b.indexOf('basic') > 0 && a.indexOf('C') < 0) a += 'Basic,'
+                    if (b.indexOf('Mountain') > 0 && a.indexOf('C') < 0) a += 'Mountain,'
+                    if (b.indexOf('Forest') > 0 && a.indexOf('C') < 0) a += 'Forest,'
+                    if (b.indexOf('Island') > 0 && a.indexOf('C') < 0) a += 'Island,'
+                    if (b.indexOf('Swamp') > 0 && a.indexOf('C') < 0) a += 'Swamp,'
+                    if (b.indexOf('Plains') > 0 && a.indexOf('C') < 0) a += 'Plains,'
                 }
                 return a
-            }, '').split('').sort().join(',') || false : false)
-            // the above crawls the cards text for mana production and fetchign if the card is not a basic land
-
-        let fetchOptions = (ProducibleManaColors === 'F') ? card.text.split('\n').reduce((a, b) => {
-            if (b.indexOf(`Sacrifice ${card.name}: Search`) > -1) {
-                if (b.indexOf('basic') > 0 && a.indexOf('C') < 0) a += 'Basic,'
-                if (b.indexOf('Mountain') > 0 && a.indexOf('C') < 0) a += 'Mountain,'
-                if (b.indexOf('Forest') > 0 && a.indexOf('C') < 0) a += 'Forest,'
-                if (b.indexOf('Island') > 0 && a.indexOf('C') < 0) a += 'Island,'
-                if (b.indexOf('Swamp') > 0 && a.indexOf('C') < 0) a += 'Swamp,'
-                if (b.indexOf('Plains') > 0 && a.indexOf('C') < 0) a += 'Plains,'
-            }
-            return a
-        },'').slice(0,-1) : false
+            }, '').slice(0, -1) : false
+            return[P,F]
+        }
+        let ProducibleManaColors = ''
+        let fetchOptions = ''
+        ProducibleManaColors = parse(card,ProducibleManaColors,fetchOptions)[0]
+        fetchOptions = parse(card, ProducibleManaColors, fetchOptions)[1]
 
         cards.push(Object.assign({}, card, { fetchOptions , ProducibleManaColors , uniqueName: (card.name + ' (' + card.set + ') #' + card.multiverseid)}))
     };

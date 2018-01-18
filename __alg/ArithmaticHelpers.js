@@ -14,7 +14,7 @@ function copy(data) {
       a.push(copy(b));
       return a;
     }, []);
-  } else if (typeof data === 'object') {
+  } else if (!data && typeof data === 'object') {
     return Object.keys(data).reduce((a, b) => {
       a[b] = copy(data[b]);
       return a;
@@ -24,12 +24,13 @@ function copy(data) {
 
 // computes probability
 
-export const probabilityOfPlayingCard = function(
+const probabilityOfPlayingCard = function(
   cardsDrawn,
   card,
   deck,
   startingHandSize = 7
 ) {
+  if (card.type.includes('Land')) return ''
   if (cardPlayable(cardsDrawn, card, deck, startingHandSize)) {
     // creating abstracted hands
     let goodHands = parseHands(cardsDrawn, card, deck);
@@ -62,7 +63,7 @@ function parseHands(numCards, card, deck) {
   deck = deck.reduce((a, b) => {
     if (b.ProducibleManaColors === 'F') {
       let f = landToFetch(costCopy, a, b.fetchOptions)
-      a.push(landToFetch(costCopy, a, b.fetchOptions))
+      a.push(f)
 
       // adjusts cost to weight unfetched lands more heavily
       Object.keys(costCopy).forEach(v => {
@@ -212,8 +213,6 @@ function parseHands(numCards, card, deck) {
     return a;
   }, []);
 
-  console.log(viable)
-
   return viable;
 }
 
@@ -280,6 +279,7 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
   deck = deck.copy();
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => a + cost[b], 0);
+  delete cost.C
   let manaBase = JSONmanaBase(deck);
   let turnCondition = draws - startingHandSize >= convertedManaCost-1;
   let manaCondition =
@@ -354,7 +354,6 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
       numerator,
       memo[cards[i][1].toString() + ',' + cards[i][0].toString()]
     );
-    console.log(numerator,denomenator)
   }
   return divideString(numerator, denomenator, 8);
 }
@@ -502,3 +501,6 @@ function greaterThan(x, y) {
   if (x.length === y.length) return x > y;
   else return x.length > y.length;
 }
+
+
+module.exports = probabilityOfPlayingCard
