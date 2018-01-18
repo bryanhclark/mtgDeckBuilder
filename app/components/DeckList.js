@@ -32,7 +32,8 @@ class DeckList extends Component {
         super(props)
         this.state = {
             drawer: false,
-            selectedCard:{}
+            selectedCard:{},
+            calculating: true,
         }
         this.convertToList = this.convertToList.bind(this)
     }
@@ -53,25 +54,26 @@ class DeckList extends Component {
             return (
                 <div className="DeckListContainer">
                     <Drawer
+                        containerStyle={{ backgroundColor:'#212121'}}
                         open={this.state.drawer}
-                        openSecondary={true}
-                        docked={true}
-                        width={"72%"}
+                        openSecondary={false}
+                        docked={false}
+                        width={"47%"}
                     >
                         <div>
                         <div>
                             <img
-                                style={{width:300,height:'auto'}}
+                                    style={{ transform: 'translate(100px, 10px)',width:300,height:'auto'}}
                                 src={`http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=${this.state.selectedCard.multiverseid}&type=card`}
                             />
                         </div>
                         <FloatingActionButton
-                            style={{ transform: 'translate(130px, 10px)'}}
+                            style={{ transform: 'translate(230px, 10px)'}}
                             disabled={!this.state.drawer}
                             label={''}
                             backgroundColor={"#FFE57F"}
                             mini={true}
-                            onClick={(e) => this.setState({ drawer: !this.state.drawer })}>
+                            onClick={(e) => this.setState({calculating:!this.state.calculating,drawer: !this.state.drawer })}>
                             <RemoveRedEye />
                         </FloatingActionButton>
                         </div>
@@ -79,11 +81,12 @@ class DeckList extends Component {
                     <Table>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                <TableHeaderColumn style={{ width: '25%' }}>Name</TableHeaderColumn>
+                                <TableHeaderColumn style={{ width: '20%' }}>Name</TableHeaderColumn>
+                                <TableHeaderColumn style={{ width: '8%' }}>View</TableHeaderColumn>
                                 <TableHeaderColumn style={{ width: '5%' }}>Quantity</TableHeaderColumn>
-                                <TableHeaderColumn style={{ width: '9%' }}>Inc</TableHeaderColumn>
-                                <TableHeaderColumn style={{ width: '9%' }}>Dec</TableHeaderColumn>
-                                <TableHeaderColumn style={{ width: '9%' }}>Remove</TableHeaderColumn>
+                                <TableHeaderColumn style={{ width: '8%' }}>Inc</TableHeaderColumn>
+                                <TableHeaderColumn style={{ width: '8%' }}>Dec</TableHeaderColumn>
+                                <TableHeaderColumn style={{ width: '8%' }}>Remove</TableHeaderColumn>
                                 <TableHeaderColumn style={{ width: '5%' }}>1</TableHeaderColumn>
                                 <TableHeaderColumn style={{ width: '5%' }}>2</TableHeaderColumn>
                                 <TableHeaderColumn style={{ width: '5%' }}>3</TableHeaderColumn>
@@ -110,7 +113,7 @@ class DeckList extends Component {
                                                     label={''}
                                                     backgroundColor={"#FFE57F"}
                                                     mini={true}
-                                                    onClick={(e) => this.setState({ drawer: !this.state.drawer, selectedCard: card })}>
+                                                    onClick={(e) => this.setState({calculating:!this.state.calculating ,drawer: !this.state.drawer, selectedCard: card })}>
                                                     <RemoveRedEye />
                                                 </FloatingActionButton>
                                             </TableRowColumn>
@@ -152,6 +155,7 @@ class DeckList extends Component {
                                                                 draws={7 + v}
                                                                 card={card}
                                                                 deck={this.convertToList(this.props.deckList)}
+                                                                calculating={this.state.calculating}
                                                             />
                                                         </TableRowColumn>
                                                     )

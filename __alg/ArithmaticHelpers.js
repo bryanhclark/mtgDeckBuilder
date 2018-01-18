@@ -1,3 +1,7 @@
+// _____________________________________________ //
+// *** line 72 & 272 have heuristics on them *** //
+// _____________________________________________ //
+
 // fuckJS
 Array.prototype.copy = function () {
   return this.reduce((a, b) => {
@@ -42,7 +46,7 @@ const probabilityOfPlayingCard = function(
     goodHands.forEach(hand => {
       P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
     });
-    return P.toFixed(3);
+    return P.toFixed(10);
   } else return 0;
 }
 
@@ -62,18 +66,23 @@ function parseHands(numCards, card, deck) {
   let costCopy = copy(cost)
   deck = deck.reduce((a, b) => {
     if (b.ProducibleManaColors === 'F') {
+
       let f = landToFetch(costCopy, a, b.fetchOptions)
       a.push(f)
 
       // adjusts cost to weight unfetched lands more heavily
       Object.keys(costCopy).forEach(v => {
-        if (!f.ProducibleManaColors.split(',').includes(v)) costCopy[v]++
+        // place for adjustment
+        if (f.ProducibleManaColors.includes(v)) costCopy[v] = Math.max(costCopy[v] - 2, 0)
       })
     }
     return a
-  }, deck.copy()).filter(
+      }, deck.copy()).filter(
     v => (v.ProducibleManaColors ? !(v.ProducibleManaColors === 'F') : true)
-    );
+  );
+
+  // this seems to temporarily fix the issue of unreal P given fetch lands (cost was being fucked up before)
+  cost = cardCost(card)
 
   // deck bins: target, lands, other
   let deckBins = deck.reduce(
@@ -251,26 +260,26 @@ function cardCost(card) {
 // * place for possible adjustments
 // ** this is an optimization problem, expert discretion important here**
 function landToFetch(manaCost, deck, fetchOptions) {
-  return deck
+  deck = deck
     .filter(
     v => {
-      return v.type.split(' ').includes(fetchOptions.split(',')[0]) ||
-        v.type.split(' ').includes(fetchOptions.split(',')[1])
+      return v.type.includes(fetchOptions.split(',')[0]) ||
+        v.type.includes(fetchOptions.split(',')[1])
     })
-    .reduce(
+  deck = deck.reduce(
     (a, b) => {
       let score = 0;
       Object.keys(manaCost).forEach(v => {
-        if (b.ProducibleManaColors.split(',').includes(v)) {
+        if (b.ProducibleManaColors.includes(v)) {
           // this line is the one that needs expertise
-          score += manaCost[v] + b.ProducibleManaColors.length;
+          //place for adjustment
+          score += manaCost[v] + b.ProducibleManaColors.length / 2;
         }
       });
       if (score > a[0]) a = [score, copy(b)];
       return a
-    },
-    [0, null]
-    )[1];
+    }, [0, null]);
+  return deck[1]
 }
 
 // boolean of if deck (or hand) can play card

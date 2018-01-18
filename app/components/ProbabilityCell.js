@@ -35,7 +35,7 @@ export class ProbCell extends Component {
     }
 
     this.setState({cardColor:color})
-    if(nextProps.card.manaCost){
+    if(nextProps.card.manaCost && nextProps.calculating){
       this.setState({ P: 'loading' })
       axios.post('api/alg', ({ draws: nextProps.draws, card: nextProps.card, deck: nextProps.deck }))
       .then(res => {
@@ -47,7 +47,7 @@ export class ProbCell extends Component {
   render() {
     if (this.state.P !== 'loading') return (
       <div>
-        {`%${this.state.P *100}`}
+        {`${(this.state.P *100).toFixed(1)}%`}
       </div>
     )
     else return (
