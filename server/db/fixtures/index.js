@@ -93,10 +93,14 @@ const cardsWithMultiverseId = allCards.reduce((cards,card,i) => {
         }
         let ProducibleManaColors = ''
         let fetchOptions = ''
-        ProducibleManaColors = parse(card,ProducibleManaColors,fetchOptions)[0]
-        fetchOptions = parse(card, ProducibleManaColors, fetchOptions)[1]
+        let parsed = parse(card, ProducibleManaColors, fetchOptions)
+        ProducibleManaColors = parsed[0]
+        fetchOptions = parsed[1]
+        if(card.manaCost){
+            card.manaCost = card.manaCost.split('/').join('')
+        }
 
-        cards.push(Object.assign({}, card, { fetchOptions , ProducibleManaColors , uniqueName: (card.name + ' (' + card.set + ') #' + card.multiverseid)}))
+        cards.push(Object.assign({}, card , {fetchOptions , ProducibleManaColors , uniqueName: (card.name + ' (' + card.set + ') #' + card.multiverseid)}))
     };
     return cards
 },[])

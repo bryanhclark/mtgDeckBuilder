@@ -1,6 +1,7 @@
-// _____________________________________________ //
-// *** line 72 & 272 have heuristics on them *** //
-// _____________________________________________ //
+// ____________________________________________ //
+// ***  manaToFetch could be smarter maybe  *** //
+// ***  choose-mana need to be dealt with   *** //
+// ____________________________________________ //
 
 // fuckJS
 Array.prototype.copy = function () {
@@ -28,61 +29,127 @@ function copy(data) {
 
 // computes probability
 
-const probabilityOfPlayingCard = function(
+const probabilityOfPlayingCard = function (
   cardsDrawn,
   card,
   deck,
   startingHandSize = 7
 ) {
-  if (card.type.includes('Land')) return ''
-  if (cardPlayable(cardsDrawn, card, deck, startingHandSize)) {
-    // creating abstracted hands
-    let goodHands = parseHands(cardsDrawn, card, deck);
+  if (card.type.includes('Land') || cardsDrawn > deck.length) return ''
 
-    // computing probability of each hand and adding to tally
-    let P = 0;
-    let deckSize = deck.length
-    let memo = {};
-    goodHands.forEach(hand => {
-      P += parseFloat(hypergeometric(cardsDrawn, hand, deckSize, memo));
-    });
-    return P.toFixed(10);
-  } else return 0;
+  // deck sterilized initially for splitmana cards
+  let C = cardCost(card)
+  Object.keys(C).forEach(v => {
+    if (isNaN(parseInt(v)) && v.length > 1) {
+      deck = deck.map(card => {
+        if (card.ProducibleManaColors) {
+          if (card.ProducibleManaColors.split('').reduce((a, b) => {
+            return a || v.includes(b)
+          }, false)) {
+            card.ProducibleManaColors += ',' + v
+          }
+        }
+        return card
+      })
+    }
+  })
+
+  if (cardPlayable(cardsDrawn, card, deck, startingHandSize)) {
+
+    let denominator = nCk((deck.length).toString(), cardsDrawn.toString())
+    // seperating deck into 'useful' fetch lands and everythign else
+    // 'useful' is determined using 'C', as it is defined above
+    let fetches = deck.filter(v => {
+      if (v.ProducibleManaColors) {
+        if (v.ProducibleManaColors.includes('F')) {
+          return manaToFetch(deck, v.fetchOptions).ProducibleManaColors.split(',').reduce((a, b) => {
+            return a || C[b] > 0
+          }, false)
+        }
+      }
+      else return false
+    })
+    let others = deck.filter(v => !fetches.includes(v))
+    let deckSize = others.length
+
+    let muliplier = '1'
+    let memo = {}
+    let sudoCard = copy(card)
+    let PP = 0
+
+    for (var i = 0; i <= fetches.length; i++) {
+
+      // uses Vandermondes identity as a premise to partition the probability of playing a card into the various possible combinations of draws of fetch lands
+
+      muliplier = nCk((fetches.length).toString(), (i).toString())
+
+      /*
+      if any lands are being fetched the contents of the following if statement do the following
+      -> choose the mana which could have been fetched in a non deterministic way
+      -> adjust the manacost of the sudoCard to account for the fetching
+      */
+      if (i > 0 && sudoCard.manaCost !== '') {
+        let manaCost = cardCost(sudoCard)
+        let fetched = manaToFetch(others, fetches[i - 1].fetchOptions)
+        let colorsFetched = (fetched.ProducibleManaColors) ? fetched.ProducibleManaColors.split(',').filter(v => manaCost[v] > 0) : ''
+        if (colorsFetched.length > 1) {
+          if (manaCost[colorsFetched[0]] && manaCost[colorsFetched[1]]) {
+            if (manaCost[colorsFetched[0] + colorsFetched[1]]) manaCost[colorsFetched[0] + colorsFetched[1]] += 1
+            else manaCost[colorsFetched[0] + colorsFetched[1]] = 1
+            manaCost[colorsFetched[0]]--
+            manaCost[colorsFetched[1]]--
+          }
+
+
+          // this map sterilizes the deck, giving manaproducers of any of the possibly fetched colors a new aggregate color of mana which they produce
+          others = others.map(card => {
+            if (card.ProducibleManaColors) {
+              if (card.ProducibleManaColors.split(',').includes(colorsFetched[0])) card.ProducibleManaColors += ',' + colorsFetched[0] + colorsFetched[1]
+
+              else if (card.ProducibleManaColors.split(',').includes(colorsFetched[1])) card.ProducibleManaColors += ',' + colorsFetched[0] + colorsFetched[1]
+            }
+            return card
+          })
+        }
+        else {
+          manaCost[colorsFetched[0]]--
+        }
+
+        // adjusting cards cost based on last fetched land
+        manaCost = Object.keys(manaCost).reduce((a, b) => {
+          if (manaCost[b] > 0) a += ('{' + b + '}').repeat(manaCost[b])
+          return a
+        }, '')
+        sudoCard = Object.assign({}, sudoCard, { manaCost: manaCost || '' })
+      }
+
+      // creating abstracted hands
+      let goodHands = parseHands(cardsDrawn - i, sudoCard, others);
+
+      // computing probability of each hand and adding to tally
+      let P = '0';
+      goodHands.forEach(hand => {
+        h = hypergeometric(cardsDrawn - i, hand, memo)
+        P = additionString(h, P);
+      });
+
+      PP += parseFloat(multiplyString(P, muliplier))
+    }
+    return PP / parseInt(denominator);
+  }
+  else return 0;
 }
 
-// enumerating every possible playable-hand given a card and a deck
-// *works well atm
-function parseHands(numCards, card, deck) {
-  // card's cost
+// abstracts every possible playable-hand given a card and a deck
 
+function parseHands(numCards, card, deck) {
+
+  // parsing card's cost for later use
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => {
     return (a += cost[b]);
   }, 0);
   let colorCost = convertedManaCost - (cost.C || 0);
-
-  // * place for possible adjustments
-  // fetch-land adjustment
-  let costCopy = copy(cost)
-  deck = deck.reduce((a, b) => {
-    if (b.ProducibleManaColors === 'F') {
-
-      let f = landToFetch(costCopy, a, b.fetchOptions)
-      a.push(f)
-
-      // adjusts cost to weight unfetched lands more heavily
-      Object.keys(costCopy).forEach(v => {
-        // place for adjustment
-        if (f.ProducibleManaColors.includes(v)) costCopy[v] = Math.max(costCopy[v] - 2, 0)
-      })
-    }
-    return a
-      }, deck.copy()).filter(
-    v => (v.ProducibleManaColors ? !(v.ProducibleManaColors === 'F') : true)
-  );
-
-  // this seems to temporarily fix the issue of unreal P given fetch lands (cost was being fucked up before)
-  cost = cardCost(card)
 
   // deck bins: target, lands, other
   let deckBins = deck.reduce(
@@ -231,7 +298,7 @@ function JSONmanaBase(deck) {
   return deck.reduce((a, b) => {
     if (b.ProducibleManaColors) {
       if (a[b.ProducibleManaColors]) a[b.ProducibleManaColors]++;
-      else if (b.ProducibleManaColors!=='false') a[b.ProducibleManaColors] = 1;
+      else if (b.ProducibleManaColors !== 'false') a[b.ProducibleManaColors] = 1;
     }
     return a;
   }, {});
@@ -248,52 +315,47 @@ function cardCost(card) {
       if (Object.keys(a).includes(b)) {
         a[b]++;
       } else {
-        if (!['B', 'G', 'W', 'R', 'U'].includes(b))
+        if (!['B', 'G', 'W', 'R', 'U'].includes(b[0]))
           a.C = !isNaN(parseInt(b)) ? parseInt(b) : 0;
         else a[b] = 1;
       }
       return a;
-    }, {});
+    }, { C: 0 });
 }
 
-// best guess at land to fetch, returns a new card object
-// * place for possible adjustments
-// ** this is an optimization problem, expert discretion important here**
-function landToFetch(manaCost, deck, fetchOptions) {
+// returns an object with one key -ProducibleManaColors- with value equal to comma delimited colors of mana that lands that could be fetched produce
+
+function manaToFetch(deck, fetchOptions) {
   deck = deck
     .filter(
     v => {
       return v.type.includes(fetchOptions.split(',')[0]) ||
         v.type.includes(fetchOptions.split(',')[1])
     })
-  deck = deck.reduce(
-    (a, b) => {
-      let score = 0;
-      Object.keys(manaCost).forEach(v => {
-        if (b.ProducibleManaColors.includes(v)) {
-          // this line is the one that needs expertise
-          //place for adjustment
-          score += manaCost[v] + b.ProducibleManaColors.length / 2;
-        }
-      });
-      if (score > a[0]) a = [score, copy(b)];
-      return a
-    }, [0, null]);
-  return deck[1]
+  mana = deck.reduce((a, b) => {
+    b.ProducibleManaColors.split(',').forEach(v => {
+      if (!a.ProducibleManaColors.includes(v)) a.ProducibleManaColors += v + ','
+    })
+    return a
+  }, { ProducibleManaColors: '' })
+  mana.ProducibleManaColors = mana.ProducibleManaColors.slice(0, -1)
+  return mana
 }
 
 // boolean of if deck (or hand) can play card
-// *works well atm
+
 function cardPlayable(draws, card, deck, startingHandSize = 7) {
   deck = deck.copy();
   let cost = cardCost(card);
   let convertedManaCost = Object.keys(cost).reduce((a, b) => a + cost[b], 0);
-  delete cost.C
   let manaBase = JSONmanaBase(deck);
-  let turnCondition = draws - startingHandSize >= convertedManaCost-1;
+  let turnCondition = draws - startingHandSize >= convertedManaCost - 1;
   let manaCondition =
     Object.keys(manaBase).reduce((a, b) => a + manaBase[b], 0) >=
     convertedManaCost;
+
+  // allows colorCondition to ignore colorless mana
+  delete cost.C
   let colorCondition = Object.keys(cost).reduce((a, b) => {
     Object.keys(manaBase).forEach(v => {
       if (v.split(',').includes(b)) {
@@ -307,7 +369,7 @@ function cardPlayable(draws, card, deck, startingHandSize = 7) {
   let includesCondition = deck.map(v => v.name).includes(card.name);
 
   // // console log that im tired of rewriting
-  // console.log(deck.map(v=>(v.ProducibleManaColors)?v.ProducibleManaColors:v.name),colorCondition , manaCondition , turnCondition , includesCondition)
+  // console.log(deck.map(v => (v.ProducibleManaColors) ? v.ProducibleManaColors : v.name), colorCondition, manaCondition, turnCondition, includesCondition)
 
   return colorCondition && manaCondition && turnCondition && includesCondition;
 }
@@ -325,7 +387,6 @@ function multichoose(numBalls, bins, combinations, com = bins.copy()) {
       // set the number of balls in the current bin to the number in the origional bins plus the number of balls currently being placed (i)
       if (i)
         com[com.length - bins.length][0] = com[com.length - bins.length][0] + 1;
-      // console.log(numBalls-i,com)
 
       // do multichoose with remaining balls on remaining bins
       multichoose(
@@ -338,19 +399,13 @@ function multichoose(numBalls, bins, combinations, com = bins.copy()) {
   }
 }
 
-// hypergeometric gives probability for a given hand, memoized (best to pass in a memo from higher scope)
+// * does not produce hypergeometric coefficients, but rather a count of combinations given a hypergeometic distribution, memoized (best to pass in a memo from higher scope)
 
-function hypergeometric(draws, cards, deckSize, memo = {}) {
+function hypergeometric(draws, cards, memo = {}) {
   // starting hand size determines if enough turns have elapsed to play the necessary mana
   // draws must be the number of expected total draws
-  // deckSize must be the total size of the deck
   // cards must be formatted as an array of pairs of quantities saught and quantities in deck, may also have additional entries but will have no baring on calculation
   draws = draws.toString();
-  deckSize = deckSize.toString();
-  if (!memo[deckSize + ',' + draws]) {
-    memo[deckSize + ',' + draws] = nCk(deckSize, draws);
-  }
-  let denomenator = memo[deckSize + ',' + draws];
   let numerator = '1';
   for (var i = 0; i < cards.length; i++) {
     if (!memo[cards[i][1].toString() + ',' + cards[i][0].toString()]) {
@@ -364,7 +419,7 @@ function hypergeometric(draws, cards, deckSize, memo = {}) {
       memo[cards[i][1].toString() + ',' + cards[i][0].toString()]
     );
   }
-  return divideString(numerator, denomenator, 8);
+  return numerator;
 }
 
 // arithmatic helper functions for large numbers
