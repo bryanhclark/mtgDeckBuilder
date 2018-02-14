@@ -304,7 +304,7 @@ function JSONmanaBase(deck) {
   }, {});
 }
 
-// arrayifies manaCost
+// objectifies manaCost
 
 function cardCost(card) {
   return card.manaCost

@@ -21,12 +21,6 @@ import Dialog from 'material-ui/Dialog';
 import { ProbCell } from './ProbabilityCell'
 import Drawer from 'material-ui/Drawer';
 
-  // blue #0D47A1
-  // red #C62828
-  // green #2E7D32
-  // white #FFE57F
-  // black #212121
-
 class DeckList extends Component {
     constructor(props){
         super(props)
@@ -36,6 +30,11 @@ class DeckList extends Component {
             calculating: true,
         }
         this.convertToList = this.convertToList.bind(this)
+        this.blue = '#2693C7'
+        this.red = '#FC6621'
+        this.green = '#2BC749'
+        this.white = '#FDEA6D'
+        this.black = '#A8A39A'
     }
 
     convertToList(deck) {
@@ -71,7 +70,7 @@ class DeckList extends Component {
                             style={{ transform: 'translate(230px, 10px)'}}
                             disabled={!this.state.drawer}
                             label={''}
-                            backgroundColor={"#FFE57F"}
+                            backgroundColor={this.white}
                             mini={true}
                             onClick={(e) => this.setState({calculating:!this.state.calculating,drawer: !this.state.drawer })}>
                             <RemoveRedEye />
@@ -111,7 +110,7 @@ class DeckList extends Component {
                                                 <FloatingActionButton
                                                     disabled={this.state.drawer}
                                                     label={''}
-                                                    backgroundColor={"#FFE57F"}
+                                                    backgroundColor={this.white}
                                                     mini={true}
                                                     onClick={(e) => this.setState({calculating:!this.state.calculating ,drawer: !this.state.drawer, selectedCard: card })}>
                                                     <RemoveRedEye />
@@ -121,16 +120,16 @@ class DeckList extends Component {
                                             <TableRowColumn style={{ width: '8%' }}>
                                                 <FloatingActionButton
                                                     disabled={card.quantity>3 && !card.type.includes('Basic Land')}
-                                                    backgroundColor={"#2E7D32"}
+                                                    backgroundColor={this.green}
                                                     mini={true}
                                                     onClick={() => this.props.updateCardQuant(card.uniqueName, card.quantity + 1)}>
-                                                    <ContentAdd />
+                                                    <ContentAdd/>
                                                 </FloatingActionButton>
                                             </TableRowColumn>
                                             <TableRowColumn style={{ width: '8%' }}>
                                                 <FloatingActionButton
                                                     disabled={card.quantity < 1}
-                                                    backgroundColor={"#0D47A1"}
+                                                    backgroundColor={this.blue}
                                                     mini={true}
                                                     onClick={() => {
                                                         this.props.updateCardQuant(card.uniqueName, card.quantity - 1)
@@ -141,7 +140,7 @@ class DeckList extends Component {
                                             </TableRowColumn>
                                             <TableRowColumn style={{ width: '8%' }}>
                                                 <FloatingActionButton
-                                                    backgroundColor={"#C62828"}
+                                                    backgroundColor={this.red}
                                                     mini={true}
                                                     onClick={() => this.props.removeCard(card.uniqueName)}>
                                                     <ContentClear />

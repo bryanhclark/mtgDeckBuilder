@@ -45973,12 +45973,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// blue #0D47A1
-// red #C62828
-// green #2E7D32
-// white #FFE57F
-// black #212121
-
 var DeckList = function (_Component) {
     _inherits(DeckList, _Component);
 
@@ -45993,6 +45987,11 @@ var DeckList = function (_Component) {
             calculating: true
         };
         _this.convertToList = _this.convertToList.bind(_this);
+        _this.blue = '#2693C7';
+        _this.red = '#FC6621';
+        _this.green = '#2BC749';
+        _this.white = '#FDEA6D';
+        _this.black = '#A8A39A';
         return _this;
     }
 
@@ -46044,7 +46043,7 @@ var DeckList = function (_Component) {
                                     style: { transform: 'translate(230px, 10px)' },
                                     disabled: !this.state.drawer,
                                     label: '',
-                                    backgroundColor: "#FFE57F",
+                                    backgroundColor: this.white,
                                     mini: true,
                                     onClick: function onClick(e) {
                                         return _this2.setState({ calculating: !_this2.state.calculating, drawer: !_this2.state.drawer });
@@ -46156,7 +46155,7 @@ var DeckList = function (_Component) {
                                             {
                                                 disabled: _this2.state.drawer,
                                                 label: '',
-                                                backgroundColor: "#FFE57F",
+                                                backgroundColor: _this2.white,
                                                 mini: true,
                                                 onClick: function onClick(e) {
                                                     return _this2.setState({ calculating: !_this2.state.calculating, drawer: !_this2.state.drawer, selectedCard: card });
@@ -46176,7 +46175,7 @@ var DeckList = function (_Component) {
                                             _FloatingActionButton2.default,
                                             {
                                                 disabled: card.quantity > 3 && !card.type.includes('Basic Land'),
-                                                backgroundColor: "#2E7D32",
+                                                backgroundColor: _this2.green,
                                                 mini: true,
                                                 onClick: function onClick() {
                                                     return _this2.props.updateCardQuant(card.uniqueName, card.quantity + 1);
@@ -46191,7 +46190,7 @@ var DeckList = function (_Component) {
                                             _FloatingActionButton2.default,
                                             {
                                                 disabled: card.quantity < 1,
-                                                backgroundColor: "#0D47A1",
+                                                backgroundColor: _this2.blue,
                                                 mini: true,
                                                 onClick: function onClick() {
                                                     _this2.props.updateCardQuant(card.uniqueName, card.quantity - 1);
@@ -46205,7 +46204,7 @@ var DeckList = function (_Component) {
                                         _react2.default.createElement(
                                             _FloatingActionButton2.default,
                                             {
-                                                backgroundColor: "#C62828",
+                                                backgroundColor: _this2.red,
                                                 mini: true,
                                                 onClick: function onClick() {
                                                     return _this2.props.removeCard(card.uniqueName);
@@ -50699,56 +50698,94 @@ var ProbCell = exports.ProbCell = function (_Component) {
 
     _this.state = {
       P: '',
-      cardColor: ''
+      cardColor: '',
+      manapic: ''
     };
+    _this.blue = '#2693C7';
+    _this.red = '#FC6621';
+    _this.green = '#2BC749';
+    _this.white = '#FDEA6D';
+    _this.black = '#A8A39A';
     return _this;
   }
 
-  // blue #0D47A1
-  // red #C62828
-  // green #2E7D32
-  // white #FFE57F
-  // black #212121
-
   _createClass(ProbCell, [{
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
+    key: 'componentWillMount',
+    value: function componentWillMount() {
       var _this2 = this;
 
       var color = void 0;
-      if (nextProps.card.manaCost) {
-        if (nextProps.card.manaCost.includes('W')) color = '#FFE57F';
-        if (nextProps.card.manaCost.includes('B')) color = '#212121';
-        if (nextProps.card.manaCost.includes('G')) color = '#2E7D32';
-        if (nextProps.card.manaCost.includes('U')) color = '#0D47A1';
-        if (nextProps.card.manaCost.includes('R')) color = '#C62828';
-      } else {
-        if (nextProps.card.ProducibleManaColors.includes('W')) color = '#FFE57F';
-        if (nextProps.card.ProducibleManaColors.includes('B')) color = '#212121';
-        if (nextProps.card.ProducibleManaColors.includes('G')) color = '#2E7D32';
-        if (nextProps.card.ProducibleManaColors.includes('U')) color = '#0D47A1';
-        if (nextProps.card.ProducibleManaColors.includes('R')) color = '#C62828';
+      if (this.props.card.manaCost) {
+        color = '';
+        if (this.props.card.manaCost.includes('W')) color += 'W';
+        if (this.props.card.manaCost.includes('B')) color += 'B';
+        if (this.props.card.manaCost.includes('G')) color += 'G';
+        if (this.props.card.manaCost.includes('U')) color += 'U';
+        if (this.props.card.manaCost.includes('R')) color += 'R';
+        color = color[Math.floor(Math.random() * color.length)];
+        if (color === 'W') color = this.white;else if (color === 'B') color = this.black;else if (color === 'G') color = this.green;else if (color === 'U') color = this.blue;else if (color === 'R') color = this.red;
+        this.setState({ cardColor: color });
       }
 
-      this.setState({ cardColor: color });
-      if (nextProps.card.manaCost && nextProps.calculating) {
+      if (this.props.card.type.includes('Land')) {
+        var manapic = this.props.card.ProducibleManaColors.includes('C') || this.props.card.ProducibleManaColors.includes('F') ? 'Cmana.png' : this.props.card.ProducibleManaColors.split(',').join('').slice(0, Math.min(this.props.card.ProducibleManaColors.length, 2)) + 'mana.png';
+        if (this.props.card.ProducibleManaColors.split(',').join('') === 'BGRUW') manapic = 'BGRUWmana.png';
+        this.setState({ manapic: manapic });
+      }
+
+      if (!this.props.card.type.includes('Land') && this.props.card.manaCost && this.props.calculating) {
+        this.setState({ P: 'loading' });
+        _axios2.default.post('api/alg', { draws: this.props.draws, card: this.props.card, deck: this.props.deck }).then(function (res) {
+          _this2.setState({ P: res.data });
+        });
+      }
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var _this3 = this;
+
+      var color = void 0;
+      if (this.props.card.manaCost) {
+        color = '';
+        if (nextProps.card.manaCost.includes('W')) color += 'W';
+        if (nextProps.card.manaCost.includes('B')) color += 'B';
+        if (nextProps.card.manaCost.includes('G')) color += 'G';
+        if (nextProps.card.manaCost.includes('U')) color += 'U';
+        if (nextProps.card.manaCost.includes('R')) color += 'R';
+        color = color[Math.floor(Math.random() * color.length)];
+        if (color === 'W') color = this.white;else if (color === 'B') color = this.black;else if (color === 'G') color = this.green;else if (color === 'U') color = this.blue;else if (color === 'R') color = this.red;
+        this.setState({ cardColor: color });
+      }
+
+      if (nextProps.card.type.includes('Land')) {
+        var manapic = nextProps.card.ProducibleManaColors.includes('C') || nextProps.card.ProducibleManaColors.includes('F') ? 'Cmana.png' : nextProps.card.ProducibleManaColors.split(',').join('').slice(0, Math.min(nextProps.card.ProducibleManaColors.length, 2)) + 'mana.png';
+        if (nextProps.card.ProducibleManaColors.split(',').join('') === 'BGRUW') manapic = 'BGRUWmana.png';
+        this.setState({ manapic: manapic });
+      }
+
+      if (!nextProps.card.type.includes('Land') && nextProps.card.manaCost && nextProps.calculating) {
         this.setState({ P: 'loading' });
         _axios2.default.post('api/alg', { draws: nextProps.draws, card: nextProps.card, deck: nextProps.deck }).then(function (res) {
-          _this2.setState({ P: res.data });
+          _this3.setState({ P: res.data });
         });
       }
     }
   }, {
     key: 'render',
     value: function render() {
-      if (this.state.P !== 'loading') return _react2.default.createElement(
+      if (this.state.P !== 'loading' && !this.props.card.type.includes('Land')) return _react2.default.createElement(
         'div',
         null,
         (this.state.P * 100).toFixed(1) + '%'
+      );else if (this.props.card.type.includes('Land')) return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement('img', { src: './Manapix/' + this.state.manapic, style: { width: '25px', height: '25px' } })
       );else return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_CircularProgress2.default, { size: 20, color: this.state.cardColor })
+        _react2.default.createElement(_CircularProgress2.default, { size: 25, color: this.state.cardColor })
       );
     }
   }]);
